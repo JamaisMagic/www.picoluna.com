@@ -1,0 +1,32 @@
+{
+  "name": "www.picoluna.com",
+  "version": "1.0.0",
+  "description": "www.picoluna.com",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JamaisMagic/www.picoluna.com.git"
+  },
+  "keywords": [
+    "node",
+    "koa"
+  ],
+  "author": "Jamais.Ng@1350756140@qq.com",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/JamaisMagic/www.picoluna.com/issues"
+  },
+  "homepage": "https://github.com/JamaisMagic/www.picoluna.com#readme",
+  "dependencies": {
+    "bunyan": "^1.8.12",
+    "dotenv": "^6.0.0",
+    "elastic-apm-node": "^1.8.3",
+    "koa": "^2.5.2",
+    "koa-bodyparser": "^4.2.1",
+    "koa-router": "^7.4.0",
+    "uuid": "^3.3.2"
+  }
+}
