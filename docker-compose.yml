@@ -1,0 +1,14 @@
+version: "3.7"
+
+services:
+  www_picoluna_com_01:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: development
+    ports:
+      - "8000:8000"
+    restart: always
+    volumes:
+      - "/data/app/www.picoluna.com:/data/app/www.picoluna.com"
+      - "/data/log/www.picoluna.com:/data/log/www.picoluna.com"
