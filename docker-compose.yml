@@ -6,9 +6,22 @@ services:
       context: .
       dockerfile: Dockerfile
       target: development
+    image: www_picoluna_com_01:latest
     ports:
       - "8000:8000"
     restart: always
+    deploy:
+      replicas: 2
+      update_config:
+      restart_policy:
+        condition: any
+        delay: 5s
+        max_attempts: 5
+        window: 10s
+      update_config:
+        parallelism: 1
+        delay: 5s
+
     volumes:
       - "/data/app/www.picoluna.com:/data/app/www.picoluna.com"
       - "/data/log/www.picoluna.com:/data/log/www.picoluna.com"
