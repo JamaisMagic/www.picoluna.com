@@ -8,7 +8,10 @@ services:
       target: development
     image: www_picoluna_com_01:latest
     ports:
-      - "8000:8000"
+      - "8000-8001:8000"
+#    network_mode: "host"
+    networks:
+      - webnet
     restart: always
     deploy:
       replicas: 2
@@ -25,3 +28,8 @@ services:
     volumes:
       - "/data/app/www.picoluna.com:/data/app/www.picoluna.com"
       - "/data/log/www.picoluna.com:/data/log/www.picoluna.com"
+networks:
+  webnet:
+#    external: true
+    name: webnet
+    driver: bridge
