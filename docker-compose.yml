@@ -1,15 +1,17 @@
 version: "3.7"
 
 services:
-  www_picoluna_com_01:
+  www_picoluna_com:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: ./Dockerfile
       target: development
-    image: www_picoluna_com_01:latest
+    image: www_picoluna_com:latest
+    environment:
+      NODE_ENV: "development"
+      APP_PORT: 8000
     ports:
       - "8000-8001:8000"
-#    network_mode: "host"
     networks:
       - webnet
     restart: always
@@ -24,7 +26,6 @@ services:
       update_config:
         parallelism: 1
         delay: 5s
-
     volumes:
       - "/data/app/www.picoluna.com:/data/app/www.picoluna.com"
       - "/data/log/www.picoluna.com:/data/log/www.picoluna.com"
