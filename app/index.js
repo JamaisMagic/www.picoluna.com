@@ -7,6 +7,7 @@ const logMiddleware = require('./middlewares/log');
 const logger = require('./logger');
 const requestId = require('./middlewares/requestId');
 const responseHandler = require('./middlewares/responseHandler');
+const rendererNunjucks = require('./middlewares/rendererNunjucks');
 const router = require('./routes');
 
 
@@ -26,6 +27,7 @@ app.use(
 app.use(requestId());
 app.use(responseHandler());
 app.use(errorHandler());
+app.use(rendererNunjucks());
 app.use(logMiddleware({ logger }));
 
 // Bootstrap application router
