@@ -1,5 +1,4 @@
 const config = require('./config');
-const apm = require('./apm');
 
 const Koa = require('koa');
 const bodyParser = require('koa-bodyparser');
@@ -34,8 +33,6 @@ app.use(router.routes());
 app.use(router.allowedMethods());
 
 function onError(err, ctx) {
-    if (apm.active)
-        apm.captureError(err);
     if (ctx == null)
         logger.error({ err, event: 'error' }, 'Unhandled exception occured');
 }

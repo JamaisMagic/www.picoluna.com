@@ -24,7 +24,6 @@
   "dependencies": {
     "bunyan": "^1.8.12",
     "dotenv": "^6.0.0",
-    "elastic-apm-node": "^1.8.3",
     "koa": "^2.5.2",
     "koa-bodyparser": "^4.2.1",
     "koa-router": "^7.4.0",

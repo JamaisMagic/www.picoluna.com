@@ -2,8 +2,10 @@ const path = require('path');
 const { env, name } = require('./');
 
 
-const directory = process.env.LOG_DIRECTORY || path.join(__dirname, '../../');
+const directory = process.env.LOG_DIRECTORY || path.resolve('/data/log/www.picoluna.com');
 const filename = process.env.LOG_FILENAME || `${name}.${env}.json.log`;
+const outFile = path.resolve('/data/log/www.picoluna.com/out.json.log');
+const errFile = path.resolve('/data/log/www.picoluna.com/error.json.log');
 
 const config = {
   name,
@@ -13,16 +15,14 @@ const config = {
 // Add streams as depending on the environment
 if (env === 'production') {
   config.streams.push({
-    type: 'rotating-file',
-    path: path.join(directory, filename),
-    period: '1d',
-    count: 7,
-    level: process.env.LOG_LEVEL || 'info'
+    type: 'file',
+    path: outFile,
+    level: 'info'
   });
   config.streams.push({
-    type: 'stream',
-    stream: process.stderr,
-    level: 'warn'
+    type: 'file',
+    path: errFile,
+    level: 'error'
   });
 } else if (env === 'development') {
   config.streams.push({
