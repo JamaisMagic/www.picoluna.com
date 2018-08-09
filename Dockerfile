@@ -7,7 +7,12 @@ COPY ./package-lock.json /data/app/www.picoluna.com/
 ENV NODE_ENV development
 ENV APP_PORT 8000
 
-RUN npm install
+RUN apk --no-cache --virtual build-dependencies add \
+    python \
+    make \
+    g++ \
+    && npm install \
+    && apk del build-dependencies
 
 EXPOSE 8000
 
