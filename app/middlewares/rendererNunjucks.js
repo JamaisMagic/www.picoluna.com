@@ -16,13 +16,14 @@ const instance = nunjucks.configure(path.resolve(__dirname, '..', 'f2e', 'sub'),
 });
 
 function rendererNunjucks() {
-  return (ctx, next) => {
+  return async (ctx, next) => {
     ctx.render = async (view, data) => {
       let result = instance.render(view, data);
       ctx.response.type = 'text/html; charset=utf-8';
       // ctx.response.status = 200;
       ctx.response.body = result;
     };
+    await next();
   }
 }
 

@@ -26,9 +26,25 @@ if (env === 'production') {
   });
 } else if (env === 'development') {
   config.streams.push({
+    type: 'file',
+    path: outFile,
+    level: 'trace'
+  });
+  config.streams.push({
+    type: 'file',
+    path: errFile,
+    level: 'error'
+  });
+} else {
+  config.streams.push({
     type: 'stream',
     stream: process.stdout,
-    level: 'debug'
+    level: 'trace'
+  });
+  config.streams.push({
+    type: 'stream',
+    stream: process.stderr,
+    level: 'error'
   });
 }
 
