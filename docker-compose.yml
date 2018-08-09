@@ -10,6 +10,8 @@ services:
     environment:
       NODE_ENV: "development"
       APP_PORT: 8000
+      REDIS_HOST: www_picoluna_com_redis
+      REDIS_PORT: 6379
     ports:
       - "8000-8001:8000"
     networks:
@@ -29,6 +31,12 @@ services:
     volumes:
       - "/data/app/www.picoluna.com/app:/data/app/www.picoluna.com/app"
       - "/data/log/www.picoluna.com:/data/log/www.picoluna.com"
+    depends_on:
+      - www_picoluna_com_redis
+  www_picoluna_com_redis:
+    image: redis:alpine
+    networks:
+          - webnet
 networks:
   webnet:
 #    external: true
