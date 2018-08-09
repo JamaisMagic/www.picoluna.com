@@ -9,9 +9,11 @@ const requestId = require('./middlewares/requestId');
 const responseHandler = require('./middlewares/responseHandler');
 const rendererNunjucks = require('./middlewares/rendererNunjucks');
 const router = require('./routes');
+const redisModule = require('./common/connection/redis');
 
 
 const app = new Koa();
+redisModule.connectRedis().then(redis => app.redis = redis);
 
 // Trust proxy
 app.proxy = true;
@@ -35,8 +37,9 @@ app.use(router.routes());
 app.use(router.allowedMethods());
 
 function onError(err, ctx) {
-    if (ctx == null)
-        logger.error({ err, event: 'error' }, 'Unhandled exception occured');
+    if (ctx == null) {
+      logger.error({ err, event: 'error' }, 'Unhandled exception occured');
+    }
 }
 
 // Handle uncaught errors

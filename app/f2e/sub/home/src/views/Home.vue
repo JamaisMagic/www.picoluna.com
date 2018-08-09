@@ -1,6 +1,8 @@
 <template>
-  <div class="home">
-    Welcome.
+  <div class="page-home">
+    <div class="welcome-box">
+      Welcome.
+    </div>
   </div>
 </template>
 
@@ -12,3 +14,14 @@ export default {
   }
 }
 </script>
+
+<style lang="scss">
+  @import "../assets/style/util";
+
+  .page-home {
+    .welcome-box {
+      text-align: center;
+      padding: px2rem(100px);
+    }
+  }
+</style>
