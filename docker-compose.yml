@@ -27,8 +27,8 @@ services:
         parallelism: 1
         delay: 5s
     volumes:
-      - "/data/app/www.picoluna.com:/data/app/www.picoluna.com"
-      - "/data/app/www.picoluna.com/node_modules"
+      - "/data/app/www.picoluna.com/app:/data/app/www.picoluna.com/app"
+      - "/data/app/www.picoluna.com/node_modules:/data/app/www.picoluna.com/node_modules"
       - "/data/log/www.picoluna.com:/data/log/www.picoluna.com"
 networks:
   webnet:
