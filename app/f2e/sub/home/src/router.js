@@ -6,10 +6,10 @@ Vue.use(Router);
 
 export default new Router({
   mode: 'history',
-  base: '/sub/home/',
+  base: '/',
   routes: [
     {
-      path: '/',
+      path: '*',
       name: 'home',
       component: Home
     }

@@ -11,6 +11,9 @@ export default {
   name: 'home',
   components: {
 
+  },
+  mounted() {
+      // document.dispatchEvent(new Event('prerender-event'));
   }
 }
 </script>
