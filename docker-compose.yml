@@ -12,6 +12,8 @@ services:
       APP_PORT: 8000
       REDIS_HOST: www_picoluna_com_redis
       REDIS_PORT: 6379
+    expose:
+      - "8000"
     ports:
       - "8000-8001:8000"
     networks:
