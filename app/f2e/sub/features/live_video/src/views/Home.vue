@@ -3,9 +3,9 @@
         <div class="video-wrapper">
             <div>Video</div>
             <video id="my_video" controls>
-                <source src="http://8461.liveplay.myqcloud.com/live/8461_c656997d03918061e8a55dc675f794d9.m3u8" type="application/x-mpegurl">
-                <source src="http://8461.liveplay.myqcloud.com/live/8461_c656997d03918061e8a55dc675f794d9.m3u8" type="application/vnd.apple.mpegurl">
-                <source src="http://8461.liveplay.myqcloud.com/live/8461_c656997d03918061e8a55dc675f794d9.flv" type="video/flv">
+                <source src="http://8461.liveplay.myqcloud.com/live/8461_78fe72fa70eedc44f99fc267c74389cf.m3u8" type="application/x-mpegurl">
+                <source src="http://8461.liveplay.myqcloud.com/live/8461_78fe72fa70eedc44f99fc267c74389cf.m3u8" type="application/vnd.apple.mpegurl">
+                <source src="http://8461.liveplay.myqcloud.com/live/8461_78fe72fa70eedc44f99fc267c74389cf.flv" type="video/flv">
             </video>
         </div>
     </div>
@@ -54,11 +54,11 @@
                     sources: [
                         {
                             type: 'video/flv',
-                            src: 'http://8461.liveplay.myqcloud.com/live/8461_c656997d03918061e8a55dc675f794d9.flv'
+                            src: 'http://8461.liveplay.myqcloud.com/live/8461_78fe72fa70eedc44f99fc267c74389cf.flv'
                         },
                         {
                             type: 'application/x-mpegurl',
-                            src: 'http://8461.liveplay.myqcloud.com/live/8461_c656997d03918061e8a55dc675f794d9.m3u8'
+                            src: 'http://8461.liveplay.myqcloud.com/live/8461_78fe72fa70eedc44f99fc267c74389cf.m3u8'
                         }
                     ]
                 };
