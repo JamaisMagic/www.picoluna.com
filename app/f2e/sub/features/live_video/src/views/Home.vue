@@ -3,9 +3,6 @@
         <div class="video-wrapper">
             <div>Video</div>
             <video id="my_video" class="video-js vjs-default-skin" controls>
-                <source src="http://8461.liveplay.myqcloud.com/live/8461_3e6b5da8398cd0c7870e984a1fe19832.m3u8" type="application/x-mpegurl">
-                <source src="http://8461.liveplay.myqcloud.com/live/8461_3e6b5da8398cd0c7870e984a1fe19832.m3u8" type="application/vnd.apple.mpegurl">
-                <source src="http://8461.liveplay.myqcloud.com/live/8461_3e6b5da8398cd0c7870e984a1fe19832.flv" type="video/flv">
             </video>
         </div>
     </div>
@@ -14,13 +11,27 @@
 <script>
     // @ is an alias to /src
     import is_js from 'is_js';
-    // import videojs from 'video.js';
-    // import 'video.js/dist/video-js.css';
-
+    import videojs from 'video.js';
     // import 'videojs-flash';
-    let videojs = null;
 
-
+    const mOptions = {
+        techOrder: ['html5', 'flash'],
+        autoplay: false,
+        sources: [
+            {
+                type: 'application/x-mpegurl',
+                src: 'http://8461.liveplay.myqcloud.com/live/8461_6c451633370bf9b646ea7abf5a36303d.m3u8'
+            },
+            {
+                type: 'application/vnd.apple.mpegurl',
+                src: 'http://8461.liveplay.myqcloud.com/live/8461_6c451633370bf9b646ea7abf5a36303d.m3u8'
+            },
+            {
+                type: 'video/flv',
+                src: 'http://8461.liveplay.myqcloud.com/live/8461_6c451633370bf9b646ea7abf5a36303d.flv'
+            }
+        ]
+    };
     export default {
         name: 'home',
         data() {
@@ -33,46 +44,27 @@
 
         },
         async mounted() {
-            videojs = await import('video.js');
-            let options = null;
-            if (is_js.android() || is_js.ios() || (is_js.mac() && !is_js.chrome())) {
-                options = {
-                    techOrder: ['html5'],
-                    html5: {
-                        hls: {
+            await this.initVideo();
+        },
+        methods: {
+            async initVideo() {
+                if (is_js.desktop() && !(is_js.mac() && is_js.safari())) {
+                    await import('videojs-flash');
+                }
 
-                        }
-                    },
-                    sources: [
-                        {
-                            type: 'application/x-mpegurl',
-                            src: 'http://8461.liveplay.myqcloud.com/live/8461_3e6b5da8398cd0c7870e984a1fe19832.m3u8'
-                        }
-                    ]
-                };
-            } else {
-                videojs = await import('video.js');
-                await import('videojs-flash');
-                options = {
-                    techOrder: ['flash', 'html5'],
-                    autoplay: false,
-                    // flash: {
-                    //     swf
-                    // },
-                    sources: [
-                        {
-                            type: 'video/flv',
-                            src: 'http://8461.liveplay.myqcloud.com/live/8461_3e6b5da8398cd0c7870e984a1fe19832.flv'
-                        },
-                        {
-                            type: 'application/x-mpegurl',
-                            src: 'http://8461.liveplay.myqcloud.com/live/8461_3e6b5da8398cd0c7870e984a1fe19832.m3u8'
-                        }
-                    ]
-                };
+                this.video = videojs(document.querySelector('#my_video'), mOptions);
+            },
+            isProtocolEqual(url) {
+                let a = document.createElement('a');
+                a.href = url;
+
+                return (location.protocol || 'https:') === a.protocol;
+            },
+            getUrlProtocol(url) {
+                let a = document.createElement('a');
+                a.href = url;
+                return a.protocol;
             }
-
-            this.video = videojs.default(document.querySelector('#my_video'), options);
         }
     }
 </script>
