@@ -57,6 +57,9 @@
                     mOptions.techOrder = ['flash', 'html5'];
                 }
 
+                console.log('useFlv', useFlv);
+                console.log('mOptions', mOptions);
+
                 this.video = videojs(document.querySelector('#my_video'), mOptions);
             },
             getUrlProtocol(url) {
