@@ -1,6 +1,7 @@
 <template>
     <div class="home">
         <div class="video-wrapper">
+            <div>Video</div>
             <video id="my_video" controls>
                 <source src="http://8461.liveplay.myqcloud.com/live/8461_c656997d03918061e8a55dc675f794d9.m3u8" type="application/x-mpegurl">
                 <source src="http://8461.liveplay.myqcloud.com/live/8461_c656997d03918061e8a55dc675f794d9.m3u8" type="application/vnd.apple.mpegurl">
@@ -14,6 +15,7 @@
     // @ is an alias to /src
     import is_js from 'is_js';
     import videojs from 'video.js';
+    // import 'video.js/dist/video-js.css';
 
     // import 'videojs-flash';
 
