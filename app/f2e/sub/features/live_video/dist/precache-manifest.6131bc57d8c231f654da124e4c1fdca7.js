@@ -12,15 +12,15 @@ self.__precacheManifest = [
     "url": "/sub/features/live_video/dist/js/chunk-ec8f.b50e2f05.js"
   },
   {
-    "revision": "57e884b1062ab28cfd27",
-    "url": "/sub/features/live_video/dist/js/app.d26d8a39.js"
+    "revision": "fbe8f936ad3f0aa78db7",
+    "url": "/sub/features/live_video/dist/js/app.4e2498f0.js"
   },
   {
     "revision": "083b480c704835c0eac2",
     "url": "/sub/features/live_video/dist/js/about.5d688836.js"
   },
   {
-    "revision": "00d731bb39f29fd91692a4e8f245b307",
+    "revision": "f8a248aabaeff2f2f5f56717ff599571",
     "url": "/sub/features/live_video/dist/index.html"
   },
   {
@@ -28,7 +28,7 @@ self.__precacheManifest = [
     "url": "/sub/features/live_video/dist/css/chunk-vendors.34b5b1f3.css"
   },
   {
-    "revision": "57e884b1062ab28cfd27",
+    "revision": "fbe8f936ad3f0aa78db7",
     "url": "/sub/features/live_video/dist/css/app.588b0c37.css"
   }
 ];
