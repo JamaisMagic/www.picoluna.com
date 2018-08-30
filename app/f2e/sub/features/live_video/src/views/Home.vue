@@ -55,6 +55,7 @@
                 if (useFlv) {
                     await import('videojs-flash');
                     mOptions.techOrder = ['flash', 'html5'];
+                    mOptions.sources.unshift(mOptions.sources.pop());
                 }
 
                 console.log('useFlv', useFlv);
