@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/3.4.1/workbox-sw.js");
 
 importScripts(
-  "/sub/features/live_video/dist/precache-manifest.2ad106a0cf2a503bd11a4f811ef5f1fb.js"
+  "/sub/features/live_video/dist/precache-manifest.64f2dc43104e7b60b5e1d045a6bab017.js"
 );
 
 workbox.core.setCacheNameDetails({prefix: "live_video"});

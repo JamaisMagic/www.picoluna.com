@@ -14,21 +14,24 @@
     import videojs from 'video.js';
     // import 'videojs-flash';
 
+    const urlM3u8 = 'http://8461.liveplay.myqcloud.com/live/8461_6c451633370bf9b646ea7abf5a36303d.m3u8';
+    const urlFlv = 'http://8461.liveplay.myqcloud.com/live/8461_6c451633370bf9b646ea7abf5a36303d.flv';
+
     const mOptions = {
         techOrder: ['html5', 'flash'],
         autoplay: false,
         sources: [
             {
                 type: 'application/x-mpegurl',
-                src: 'http://8461.liveplay.myqcloud.com/live/8461_6c451633370bf9b646ea7abf5a36303d.m3u8'
+                src: urlM3u8
             },
             {
                 type: 'application/vnd.apple.mpegurl',
-                src: 'http://8461.liveplay.myqcloud.com/live/8461_6c451633370bf9b646ea7abf5a36303d.m3u8'
+                src: urlM3u8
             },
             {
                 type: 'video/flv',
-                src: 'http://8461.liveplay.myqcloud.com/live/8461_6c451633370bf9b646ea7abf5a36303d.flv'
+                src: urlFlv
             }
         ]
     };
@@ -48,22 +51,24 @@
         },
         methods: {
             async initVideo() {
-                if (is_js.desktop() && !(is_js.mac() && is_js.safari())) {
+                let useFlv = is_js.desktop() && !(is_js.mac() && is_js.safari()) && !this.isProtocolEqualOrHttps(urlM3u8);
+                if (useFlv) {
                     await import('videojs-flash');
+                    mOptions.techOrder = ['flash', 'html5'];
                 }
 
                 this.video = videojs(document.querySelector('#my_video'), mOptions);
-            },
-            isProtocolEqual(url) {
-                let a = document.createElement('a');
-                a.href = url;
-
-                return (location.protocol || 'https:') === a.protocol;
             },
             getUrlProtocol(url) {
                 let a = document.createElement('a');
                 a.href = url;
                 return a.protocol;
+            },
+            isProtocolEqual(url) {
+                return (location.protocol || 'https:') === this.getUrlProtocol(url);
+            },
+            isProtocolEqualOrHttps(url) {
+                return this.getUrlProtocol(url) === 'https:' || this.isProtocolEqual(url);
             }
         }
     }
