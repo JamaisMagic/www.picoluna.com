@@ -14,10 +14,11 @@
 <script>
     // @ is an alias to /src
     import is_js from 'is_js';
-    import videojs from 'video.js';
+    // import videojs from 'video.js';
     // import 'video.js/dist/video-js.css';
 
     // import 'videojs-flash';
+    let videojs = null;
 
 
     export default {
@@ -32,6 +33,7 @@
 
         },
         async mounted() {
+            videojs = await import('video.js');
             let options = null;
             if (is_js.android() || is_js.ios() || (is_js.mac() && !is_js.chrome())) {
                 options = {
@@ -49,13 +51,14 @@
                     ]
                 };
             } else {
-                let swf = await import('videojs-flash');
+                videojs = await import('video.js');
+                await import('videojs-flash');
                 options = {
                     techOrder: ['flash', 'html5'],
                     autoplay: false,
-                    flash: {
-                        swf
-                    },
+                    // flash: {
+                    //     swf
+                    // },
                     sources: [
                         {
                             type: 'video/flv',
@@ -69,7 +72,7 @@
                 };
             }
 
-            this.video = videojs(document.querySelector('#my_video'), options);
+            this.video = videojs.default(document.querySelector('#my_video'), options);
         }
     }
 </script>
