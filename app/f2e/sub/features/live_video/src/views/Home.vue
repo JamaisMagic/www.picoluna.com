@@ -20,6 +20,7 @@
     const mOptions = {
         techOrder: ['flash', 'html5'],
         autoplay: false,
+        flash: {},
         sources: [
             {
                 type: 'video/flv',
@@ -54,6 +55,7 @@
                 let useFlv = is_js.desktop() && !(is_js.mac() && is_js.safari()) && !this.isProtocolEqualOrHttps(urlM3u8);
                 if (useFlv) {
                     await import('videojs-flash');
+                    mOptions.flash.swf = `${process.env.BASE_URL}swf/video-js.swf`;
                     // mOptions.techOrder = ['flash', 'html5'];
                     // mOptions.sources.unshift(mOptions.sources.pop());
                 } else {
