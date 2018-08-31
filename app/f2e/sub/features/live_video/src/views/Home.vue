@@ -14,13 +14,17 @@
     import videojs from 'video.js';
     // import 'videojs-flash';
 
-    const urlM3u8 = 'http://8461.liveplay.myqcloud.com/live/8461_6c451633370bf9b646ea7abf5a36303d.m3u8';
-    const urlFlv = 'http://8461.liveplay.myqcloud.com/live/8461_6c451633370bf9b646ea7abf5a36303d.flv';
+    const urlM3u8 = 'http://8461.liveplay.myqcloud.com/live/8461_6aec5f775926fcf27a01c71d17500af9.m3u8';
+    const urlFlv = 'http://8461.liveplay.myqcloud.com/live/8461_6aec5f775926fcf27a01c71d17500af9.flv';
 
     const mOptions = {
-        techOrder: ['html5', 'flash'],
+        techOrder: ['flash', 'html5'],
         autoplay: false,
         sources: [
+            {
+                type: 'video/flv',
+                src: urlFlv
+            },
             {
                 type: 'application/x-mpegurl',
                 src: urlM3u8
@@ -29,10 +33,6 @@
                 type: 'application/vnd.apple.mpegurl',
                 src: urlM3u8
             },
-            {
-                type: 'video/flv',
-                src: urlFlv
-            }
         ]
     };
     export default {
@@ -54,8 +54,10 @@
                 let useFlv = is_js.desktop() && !(is_js.mac() && is_js.safari()) && !this.isProtocolEqualOrHttps(urlM3u8);
                 if (useFlv) {
                     await import('videojs-flash');
-                    mOptions.techOrder = ['flash', 'html5'];
-                    mOptions.sources.unshift(mOptions.sources.pop());
+                    // mOptions.techOrder = ['flash', 'html5'];
+                    // mOptions.sources.unshift(mOptions.sources.pop());
+                } else {
+                    // mOptions.techOrder = ['html5', 'flash'];
                 }
 
                 console.log('useFlv', useFlv);
