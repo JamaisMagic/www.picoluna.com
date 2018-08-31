@@ -24,7 +24,7 @@ self.__precacheManifest = [
     "url": "/sub/features/live_video/dist/js/about.5d688836.js"
   },
   {
-    "revision": "290214c18813a30d710a05c2d084a9b5",
+    "revision": "a9972c7cefbd389d04d219596d01b772",
     "url": "/sub/features/live_video/dist/index.html"
   },
   {

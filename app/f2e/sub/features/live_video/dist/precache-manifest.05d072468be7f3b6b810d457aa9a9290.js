@@ -16,7 +16,7 @@ self.__precacheManifest = [
     "url": "/sub/features/live_video/dist/js/about-legacy.5d688836.js"
   },
   {
-    "revision": "42291a3c7740037794705c94720d96b4",
+    "revision": "026d3f31bfb5efeadf926c8d76f2c648",
     "url": "/sub/features/live_video/dist/index.html"
   },
   {
