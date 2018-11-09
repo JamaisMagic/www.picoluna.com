@@ -37,6 +37,7 @@ services:
       - www_picoluna_com_redis
   www_picoluna_com_redis:
     image: redis:alpine
+    restart: always
     networks:
           - webnet
 networks:
