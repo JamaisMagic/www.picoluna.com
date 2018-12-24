@@ -2,13 +2,49 @@
 
 import { register } from 'register-service-worker'
 
+
+function urlBase64ToUint8Array(base64String) {
+  const padding = '='.repeat((4 - base64String.length % 4) % 4);
+  const base64 = (base64String + padding)
+    .replace(/\-/g, '+')
+    .replace(/_/g, '/')
+  ;
+  const rawData = window.atob(base64);
+  return Uint8Array.from([...rawData].map((char) => char.charCodeAt(0)));
+}
+
 if (process.env.NODE_ENV === 'production') {
   register(`${process.env.BASE_URL}service-worker.js`, {
-    ready () {
+    async ready (registration) {
       console.log(
         'App is being served from cache by a service worker.\n' +
         'For more details, visit https://goo.gl/AFskqB'
-      )
+      );
+
+      let subscription = registration.pushManager.getSubscription();
+
+      if (!subscription) {
+        const response = await fetch('/api/v1/push/vapid/');
+        const responseJson = await response.json();
+        const vapidPublicKey = responseJson.data.publicKey;
+        const convertedVapidKey = urlBase64ToUint8Array(vapidPublicKey);
+
+        subscription = await registration.pushManager.subscribe({
+          userVisibleOnly: true,
+          applicationServerKey: convertedVapidKey
+        });
+      }
+
+      const response = await fetch('/api/v1/push/subscription/', {
+        headers: {'Content-Type': 'application/json'},
+        method: 'POST',
+        body: JSON.stringify({ subscription })
+      });
+      const responseJson = await response.json();
+
+      if (responseJson.status !== 'success') {
+        console.error('subscript error.');
+      }
     },
     cached () {
       console.log('Content has been cached for offline use.')

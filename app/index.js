@@ -29,8 +29,8 @@ app.use(
 app.use(requestId());
 app.use(responseHandler());
 app.use(errorHandler());
-app.use(rendererNunjucks());
 app.use(logMiddleware({ logger }));
+app.use(rendererNunjucks());
 
 // Bootstrap application router
 app.use(router.routes());
