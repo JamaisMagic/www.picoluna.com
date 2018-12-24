@@ -14,7 +14,7 @@ function urlBase64ToUint8Array(base64String) {
 }
 
 if (process.env.NODE_ENV === 'production') {
-  register(`${process.env.BASE_URL}service-worker.js`, {
+  register(`/service-worker.js`, {
     async ready (registration) {
       console.log(
         'App is being served from cache by a service worker.\n' +
