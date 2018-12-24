@@ -1,29 +1,26 @@
-/**
- * Welcome to your Workbox-powered service worker!
- *
- * You'll need to register this file in your web app and you should
- * disable HTTP caching for this file too.
- * See https://goo.gl/nhQhGp
- *
- * The rest of the code is auto-generated. Please don't update this file
- * directly; instead, make changes to your Workbox build configuration
- * and re-run your build process.
- * See https://goo.gl/2aRDsh
- */
+importScripts("/sub/home/dist/precache-manifest.1b31e35a12d8d1ac72ad0622e774e93f.js", "https://storage.googleapis.com/workbox-cdn/releases/3.4.1/workbox-sw.js");
 
-importScripts("https://storage.googleapis.com/workbox-cdn/releases/3.4.1/workbox-sw.js");
+console.log(self.__precacheManifest);
 
-importScripts(
-  "/sub/home/dist/precache-manifest.1b31e35a12d8d1ac72ad0622e774e93f.js"
-);
+function getEndpoint() {
+  return self.registration.pushManager.getSubscription()
+    .then(function (subscription) {
+      if (subscription) {
+        return subscription.endpoint;
+      }
 
-workbox.core.setCacheNameDetails({prefix: "home"});
+      return null;
+    });
+}
 
-/**
- * The workboxSW.precacheAndRoute() method efficiently caches and responds to
- * requests for URLs in the manifest.
- * See https://goo.gl/S9QRab
- */
-self.__precacheManifest = [].concat(self.__precacheManifest || []);
-workbox.precaching.suppressWarnings();
-workbox.precaching.precacheAndRoute(self.__precacheManifest, {});
+self.addEventListener('push', function (event) {
+  event.waitUntil(
+    getEndpoint()
+      .then(function (payload) {
+        return self.registration.showNotification('ServiceWorker received push', {
+          body: payload,
+        });
+      })
+  );
+});
+

@@ -43,7 +43,7 @@ module.exports = {
   pwa: {
     workboxPluginMode: 'InjectManifest',
     workboxOptions: {
-      swSrc: path.join('src', 'sw.js'),
+      swSrc: path.join('src', 'service-worker.js'),
     }
   }
 };
