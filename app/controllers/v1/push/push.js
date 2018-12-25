@@ -34,9 +34,14 @@ exports.storeSubscription = async ctx => {
 
   const writeFilePromise = util.promisify(fs.writeFile);
 
-  await writeFilePromise(path.join(__dirname, 'subscription.txt'), JSON.stringify(subscription) + '\n', {
-    flag: 'a'
-  });
+  try {
+    await writeFilePromise(path.join(__dirname, 'subscription.txt'), JSON.stringify(subscription) + '\n', {
+      flag: 'a'
+    });
+  } catch (e) {
+    console.log(e);
+    logger.error('write file', e);
+  }
 
   return ctx.res.success();
 };
