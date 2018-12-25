@@ -51,11 +51,6 @@ exports.sendNotification = async ctx => {
   const payload = body.payload;
   const subscription = body.subscription || {};
 
-  console.log(body);
-  console.log(subscription);
-  logger.warn(body);
-  logger.warn(subscription);
-
   const options = {
     TTL: body.ttl || 300,
   };
