@@ -37,7 +37,7 @@ if (process.env.NODE_ENV === 'production') {
 
       let subscription = registration.pushManager.getSubscription();
 
-      if (!subscription) {
+      if (!subscription || !subscription.endpoint) {
         const response = await fetch('/api/v1/push/vapid/');
         const responseJson = await response.json();
         const vapidPublicKey = responseJson.data.publicKey;
