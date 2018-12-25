@@ -55,7 +55,7 @@ exports.sendNotification = async ctx => {
     TTL: body.ttl || 300,
   };
 
-  await webPush.sendNotification(subscription, null, options);
+  await webPush.sendNotification(subscription, payload, options);
 
   ctx.res.success({});
 };
