@@ -43,7 +43,7 @@ exports.storeSubscription = async ctx => {
     logger.error('write file', e);
   }
 
-  return ctx.res.success();
+  return ctx.res.success({});
 };
 
 exports.sendNotification = async ctx => {
@@ -57,5 +57,5 @@ exports.sendNotification = async ctx => {
 
   await webPush.sendNotification(subscription, null, options);
 
-  ctx.res.success();
+  ctx.res.success({});
 };
