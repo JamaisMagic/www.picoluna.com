@@ -20,6 +20,9 @@ if (process.env.NODE_ENV === 'production') {
         'App is being served from cache by a service worker.\n' +
         'For more details, visit https://goo.gl/AFskqB'
       );
+    },
+    async registered(registration) {
+      console.log('Service-worker registered');
 
       let subscription = registration.pushManager.getSubscription();
 
@@ -46,10 +49,10 @@ if (process.env.NODE_ENV === 'production') {
         console.error('subscript error.');
       }
     },
-    cached () {
+    cached (registration) {
       console.log('Content has been cached for offline use.')
     },
-    updated () {
+    updated (registration) {
       console.log('New content is available; please refresh.')
     },
     offline () {
