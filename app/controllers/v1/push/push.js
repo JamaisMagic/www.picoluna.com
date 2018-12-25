@@ -47,7 +47,7 @@ exports.storeSubscription = async ctx => {
 };
 
 exports.sendNotification = async ctx => {
-  let body = ctx.req.body || {};
+  let body = ctx.request.body || {};
   const payload = body.payload;
   const subscription = body.subscription || {};
 
