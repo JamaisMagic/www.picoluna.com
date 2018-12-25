@@ -49,13 +49,20 @@ exports.storeSubscription = async ctx => {
 exports.sendNotification = async ctx => {
   let body = ctx.req.body || {};
   const payload = body.payload;
-  let subscription = body.subscription || {};
+  const subscription = body.subscription || {};
+
+  logger.info(body);
+  logger.info(subscription);
 
   const options = {
     TTL: body.ttl || 300,
   };
 
-  await webPush.sendNotification(subscription, payload, options);
+  try {
+    await webPush.sendNotification(subscription, payload, options);
+  } catch (e) {
+    logger.error(e);
+  }
 
   ctx.res.success({});
 };
