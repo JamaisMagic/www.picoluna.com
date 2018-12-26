@@ -22,17 +22,13 @@ class WebPush {
     try {
       const [result, fields] = await this.conn.execute(sql, values);
       if (result) {
-        logger.info({event: 'mysqlExecuteInfo', msg: JSON.stringify(result)});
+        logger.info({event: 'mysqlExecuteInfo'}, JSON.stringify(result));
         return result;
       }
-      logger.info({event: 'mysqlExecuteError', msg: 'No result', misc: {
-          sql, values: JSON.stringify(values)
-        }});
+      logger.info({event: 'mysqlExecuteError', sql, sqlValue: JSON.stringify(values)}, 'No result');
       return null;
-    } catch (e) {
-      logger.error({event: 'mysqlExecuteError', msg: e.message, misc: {
-        sql, values: JSON.stringify(values)
-      }});
+    } catch (err) {
+      logger.error({event: 'mysqlExecuteError', sql, err, sqlValue: JSON.stringify(values)});
       return null;
     }
   }

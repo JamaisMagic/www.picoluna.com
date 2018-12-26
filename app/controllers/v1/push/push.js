@@ -29,8 +29,7 @@ exports.storeSubscription = async ctx => {
   }
 
   const result = await ctx.app.dalMysql.webPUsh.storeTouristSubscription(
-    subscription.endpoint, JSON.stringify(subscription), ua, ''
-  );
+    subscription.endpoint, JSON.stringify(subscription), ua);
 
   if (result) {
     return ctx.res.success({});
@@ -58,21 +57,13 @@ exports.sendNotification = async ctx => {
 
   try {
     const result = await webPush.sendNotification(subscription, payload, options);
-    logger.info({
-      event: 'sendNotificationInfo',
-      msg: 'send notification info',
-      misc: {
-        result: JSON.stringify(result)
-      }
-    })
-  } catch (e) {
+    logger.info({event: 'sendNotificationInfo'}, JSON.stringify(result))
+  } catch (err) {
     logger.error({
       event: 'sendNotificationError',
-      msg: e.message,
-      misc: {
-        payload,
-        subscription: JSON.stringify(payload)
-      }
+      err,
+      payload,
+      subscription: JSON.stringify(subscription)
     });
     return ctx.res.fail({});
   }
