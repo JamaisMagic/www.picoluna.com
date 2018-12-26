@@ -20,7 +20,8 @@ const configs = {
       port: process.env.MYSQL_PORT || 3306,
       database: process.env.MYSQL_DB_NAME,
       user: process.env.MYSQL_USER || 'root',
-      password: process.env.MYSQL_PWD || '123456'
+      password: process.env.MYSQL_PWD || '123456',
+      charset: 'UTF8MB4_GENERAL_CI'
     }
   },
   production: {

@@ -1,6 +1,7 @@
 const mysql = require('mysql2/promise');
 const config = require('../../config/index');
 const logger = require('../../logger');
+const dalModule = require('../../dal/index');
 
 
 async function connect(app) {
@@ -8,6 +9,7 @@ async function connect(app) {
   logger.info('Mysql connected.');
   if (app) {
     app.mysql = connection;
+    app.dalMysql = dalModule.init(connection);
   }
 
   connection.on('error', async (err) => {

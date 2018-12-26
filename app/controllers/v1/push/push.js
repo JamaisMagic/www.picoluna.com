@@ -23,23 +23,17 @@ exports.getVapid = async ctx => {
 };
 
 exports.storeSubscription = async ctx => {
-  let body = ctx.request.body || {};
-  let subscription = body.subscription;
+  const body = ctx.request.body || {};
+  const subscription = body.subscription;
+  const ua = ctx.req.headers['User-Agent'] || '';
 
   if (!subscription || !subscription.endpoint) {
     return ctx.res.fail({});
   }
 
-  const writeFilePromise = util.promisify(fs.writeFile);
-
-  try {
-    await writeFilePromise(path.join(__dirname, 'subscription.txt'), JSON.stringify(subscription) + '\n', {
-      flag: 'a'
-    });
-  } catch (e) {
-    console.log(e);
-    logger.error('write file', e);
-  }
+  const result = await ctx.app.dalMysql.webPUsh.storeSubscription(
+    subscription.endpoint, JSON.stringify(subscription), ua, ''
+  );
 
   return ctx.res.success({});
 };
@@ -47,12 +41,14 @@ exports.storeSubscription = async ctx => {
 exports.sendNotification = async ctx => {
   let body = ctx.request.body || {};
   const payload = body.payload;
-  const subscription = body.subscription || {};
   const endpoint = body.endpoint || '';
 
   const options = {
     TTL: body.ttl || 300,
   };
+
+  const rows = await ctx.app.dalMysql.webPUsh.querySubscriptionByEndpoint(endpoint);
+  const subscription = rows[0].subscription;
 
   try {
     await webPush.sendNotification(subscription, payload, options);
