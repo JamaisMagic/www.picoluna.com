@@ -18,34 +18,45 @@ class WebPush {
     return `${tableBase}_${md5[0]}`;
   }
 
+  async doExecute(sql, values) {
+    try {
+      const [result, fields] = await this.conn.execute(sql, values);
+      if (result) {
+        logger.info({event: 'mysqlExecuteInfo', msg: JSON.stringify(result)});
+        return result;
+      }
+      logger.info({event: 'mysqlExecuteError', msg: 'No result', misc: {
+          sql, values: JSON.stringify(values)
+        }});
+      return null;
+    } catch (e) {
+      logger.error({event: 'mysqlExecuteError', msg: e.message, misc: {
+        sql, values: JSON.stringify(values)
+      }});
+      return null;
+    }
+  }
+
   async storeTouristSubscription(endpoint, subscription, ua) {
     const tableName = WebPush.getTableIndex(endpoint, TABLE_NAME_PREFIX_WEB_PUSH);
-    const [rows, fields] = await this.conn.execute(`insert into ${tableName} (endpoint, subscription, ua) 
+
+    return this.doExecute(`insert into ${tableName} (endpoint, subscription, ua) 
     values (?, ?, ?) on duplicate key 
     update subscription = ?, ua = ?`, [endpoint, subscription, ua, subscription, ua]);
-
-    logger.info(JSON.stringify(rows));
-    logger.info(JSON.stringify(fields));
-    return 1;
   }
 
   async storeUserSubscription(endpoint, subscription, ua, uid) {
     const tableName = WebPush.getTableIndex(endpoint, TABLE_NAME_PREFIX_WEB_PUSH);
-    const [rows, fields] = await this.conn.execute(`insert into ${tableName} (endpoint, subscription, ua, uid) 
+
+    return this.doExecute(`insert into ${tableName} (endpoint, subscription, ua, uid) 
     values (?, ?, ? ,?) on duplicate key 
     update subscription = ?, ua = ?`, [endpoint, subscription, ua, uid, subscription, ua]);
-
-    logger.info(rows);
-    logger.info(fields);
-    return 1;
   }
 
   async querySubscriptionByEndpoint(endpoint) {
     const tableName = WebPush.getTableIndex(endpoint, TABLE_NAME_PREFIX_WEB_PUSH);
-    const [rows, fields] = await this.conn.execute(`select * from ${tableName} where \`endpoint\` = ?`, [endpoint]);
-    logger.info(JSON.stringify(rows));
-    logger.info(JSON.stringify(fields));
-    return rows;
+
+    return this.doExecute(`select * from ${tableName} where \`endpoint\` = ?`, [endpoint]);
   }
 }
 

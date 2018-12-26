@@ -32,7 +32,11 @@ exports.storeSubscription = async ctx => {
     subscription.endpoint, JSON.stringify(subscription), ua, ''
   );
 
-  return ctx.res.success({});
+  if (result) {
+    return ctx.res.success({});
+  }
+
+  return ctx.res.fail({});
 };
 
 exports.sendNotification = async ctx => {
@@ -45,12 +49,32 @@ exports.sendNotification = async ctx => {
   };
 
   const rows = await ctx.app.dalMysql.webPUsh.querySubscriptionByEndpoint(endpoint);
+
+  if (!rows || rows.length <= 0) {
+    return ctx.res.fail({});
+  }
+
   const subscription = rows[0].subscription;
 
   try {
-    await webPush.sendNotification(subscription, payload, options);
+    const result = await webPush.sendNotification(subscription, payload, options);
+    logger.info({
+      event: 'sendNotificationInfo',
+      msg: 'send notification info',
+      misc: {
+        result: JSON.stringify(result)
+      }
+    })
   } catch (e) {
-    logger.error(e);
+    logger.error({
+      event: 'sendNotificationError',
+      msg: e.message,
+      misc: {
+        payload,
+        subscription: JSON.stringify(payload)
+      }
+    });
+    return ctx.res.fail({});
   }
 
   ctx.res.success({});
