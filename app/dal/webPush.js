@@ -18,7 +18,18 @@ class WebPush {
     return `${tableBase}_${md5[0]}`;
   }
 
-  async storeSubscription(endpoint, subscription, ua, uid) {
+  async storeTouristSubscription(endpoint, subscription, ua) {
+    const tableName = WebPush.getTableIndex(endpoint, TABLE_NAME_PREFIX_WEB_PUSH);
+    const [rows, fields] = await this.conn.execute(`insert into ${tableName} (endpoint, subscription, ua) 
+    values (?, ?, ?) on duplicate key 
+    update subscription = ?, ua = ?`, [endpoint, subscription, ua, subscription, ua]);
+
+    logger.info(JSON.stringify(rows));
+    logger.info(JSON.stringify(fields));
+    return 1;
+  }
+
+  async storeUserSubscription(endpoint, subscription, ua, uid) {
     const tableName = WebPush.getTableIndex(endpoint, TABLE_NAME_PREFIX_WEB_PUSH);
     const [rows, fields] = await this.conn.execute(`insert into ${tableName} (endpoint, subscription, ua, uid) 
     values (?, ?, ? ,?) on duplicate key 
@@ -32,8 +43,8 @@ class WebPush {
   async querySubscriptionByEndpoint(endpoint) {
     const tableName = WebPush.getTableIndex(endpoint, TABLE_NAME_PREFIX_WEB_PUSH);
     const [rows, fields] = await this.conn.execute(`select * from ${tableName} where \`endpoint\` = ?`, [endpoint]);
-    logger.info(rows);
-    logger.info(fields);
+    logger.info(JSON.stringify(rows));
+    logger.info(JSON.stringify(fields));
     return rows;
   }
 }

@@ -1,6 +1,3 @@
-const fs = require('fs');
-const path = require('path');
-const util = require('util');
 const webPush = require('web-push');
 const logger = require('../../../logger');
 
@@ -31,7 +28,7 @@ exports.storeSubscription = async ctx => {
     return ctx.res.fail({});
   }
 
-  const result = await ctx.app.dalMysql.webPUsh.storeSubscription(
+  const result = await ctx.app.dalMysql.webPUsh.storeTouristSubscription(
     subscription.endpoint, JSON.stringify(subscription), ua, ''
   );
 
