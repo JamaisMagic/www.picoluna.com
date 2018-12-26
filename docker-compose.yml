@@ -12,6 +12,11 @@ services:
       APP_PORT: 8000
       REDIS_HOST: www_picoluna_com_redis
       REDIS_PORT: 6379
+      MYSQL_HOST: www_mysql_5
+      MYSQL_PORT: 3306
+      MYSQL_USER: "root"
+      MYSQL_PWD: "123456"
+      MYSQL_DB_NAME: "www_picoluna_com"
     expose:
       - "8000"
     ports:
@@ -19,17 +24,6 @@ services:
     networks:
       - webnet
     restart: always
-    deploy:
-      replicas: 2
-      update_config:
-      restart_policy:
-        condition: any
-        delay: 5s
-        max_attempts: 5
-        window: 10s
-      update_config:
-        parallelism: 1
-        delay: 5s
     volumes:
       - "/data/app/www.picoluna.com/app:/data/app/www.picoluna.com/app"
       - "/data/log/www.picoluna.com:/data/log/www.picoluna.com"

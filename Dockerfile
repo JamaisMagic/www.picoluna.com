@@ -16,4 +16,4 @@ RUN apk --no-cache --virtual build-dependencies add \
 
 EXPOSE 8000
 
-CMD [ "npm", "start" ]
+CMD [ "node", "/data/app/www.picoluna.com/app/index.js" ]
