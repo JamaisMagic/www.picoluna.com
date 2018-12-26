@@ -11,17 +11,7 @@ self.addEventListener('push', function (event) {
   }
   event.waitUntil(
     self.registration.showNotification('ServiceWorker received push', {
-      actions: {
-        action: 'action',
-        title: 'actions title',
-        // icon: ''
-      },
-      // badge: '',
       body: payload,
-      // icon: '',
-      // image: '',
-      renotify: false,
-      requireInteraction: false,
     })
       .then(event => {
         console.log(event.type);
