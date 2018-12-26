@@ -26,10 +26,8 @@ exports.storeSubscription = async ctx => {
   let body = ctx.request.body || {};
   let subscription = body.subscription;
 
-  if (!subscription) {
-    return ctx.res.fail({
-      message: 'No subscription data.'
-    });
+  if (!subscription || !subscription.endpoint) {
+    return ctx.res.fail({});
   }
 
   const writeFilePromise = util.promisify(fs.writeFile);
@@ -50,6 +48,7 @@ exports.sendNotification = async ctx => {
   let body = ctx.request.body || {};
   const payload = body.payload;
   const subscription = body.subscription || {};
+  const endpoint = body.endpoint || '';
 
   const options = {
     TTL: body.ttl || 300,

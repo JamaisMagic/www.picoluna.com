@@ -2,33 +2,43 @@ const Redis = require('ioredis');
 const config = require('../../config/index');
 const logger = require('../../logger');
 
-let connRedis = null;
+let connection = null;
 
 function connect() {
-  connRedis = new Redis(config.redis);
+  connection = new Redis(config.redis);
 
-  connRedis.on('connect', () => {
+  connection.on('connect', () => {
     logger.info({event: 'redis.connect'});
   });
-  connRedis.on('error', () => {
+  connection.on('error', () => {
     logger.info({event: 'redis.error'});
   });
-  connRedis.on('close', () => {
+  connection.on('close', () => {
     logger.info({event: 'redis.close'});
   });
-  connRedis.on('reconnecting', () => {
+  connection.on('reconnecting', () => {
     logger.info({event: 'redis.reconnecting'});
   });
-  connRedis.on('end', () => {
+  connection.on('end', () => {
     logger.info({event: 'redis.end'});
   });
 
   return new Promise((resolve) => {
-    connRedis.on('ready', () => {
+    connection.on('ready', () => {
       logger.info({event: 'redis.ready'});
-      resolve(connRedis);
+      resolve(connection);
     });
   });
 }
 
-module.exports.connectRedis = connect;
+function quit() {
+  if (connection) {
+    return connection.quit();
+  }
+  return Promise.resolve(1);
+}
+
+module.exports = {
+  connect,
+  quit
+};
