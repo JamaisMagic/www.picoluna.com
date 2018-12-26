@@ -14,7 +14,10 @@ self.addEventListener('push', function (event) {
       body: payload,
     })
       .then(event => {
-        console.log(event.type);
+        console.log(event);
+        if (event) {
+          console.log(event.type);
+        }
       })
   );
 });
