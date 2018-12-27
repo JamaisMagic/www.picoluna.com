@@ -93,7 +93,7 @@ limit 100
   console.log(subscription);
 
   try {
-    const result = await webPush.sendNotification(subscription, payload, options);
+    const result = await webPush.sendNotification(JSON.parse(subscription), payload, options);
     console.log('Send end', result);
   } catch (err) {
     console.error(err);
