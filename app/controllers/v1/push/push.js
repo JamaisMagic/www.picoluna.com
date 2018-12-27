@@ -50,7 +50,9 @@ exports.sendNotification = async ctx => {
   const rows = await ctx.app.dalMysql.webPUsh.querySubscriptionByEndpoint(endpoint);
 
   if (!rows || rows.length <= 0) {
-    return ctx.res.fail({});
+    return ctx.res.fail({
+      message: 'No such endpoint'
+    });
   }
 
   const subscription = rows[0].subscription;
@@ -65,7 +67,9 @@ exports.sendNotification = async ctx => {
       payload,
       subscription: JSON.stringify(subscription)
     });
-    return ctx.res.fail({});
+    return ctx.res.fail({
+      message: 'Send notification failed'
+    });
   }
 
   ctx.res.success({});
