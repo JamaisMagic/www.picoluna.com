@@ -22,7 +22,7 @@ exports.getVapid = async ctx => {
 exports.storeSubscription = async ctx => {
   const body = ctx.request.body || {};
   const subscription = body.subscription;
-  const ua = ctx.req.headers['User-Agent'] || '';
+  const ua = ctx.req.get('User-Agent') || '';
 
   if (!subscription || !subscription.endpoint) {
     return ctx.res.fail({});
