@@ -24,7 +24,7 @@ self.addEventListener('push', event => {
     self.registration.showNotification(messageObj.title || 'www.picoluna.com', {
       body: messageObj.message,
       icon: '/logo-icon-200x200.png',
-      vibrate: [200, 200]
+      vibrate: [200, 200, 200],
     })
   );
 });
