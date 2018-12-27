@@ -13,7 +13,10 @@ async function connect(app) {
   }
 
   connection.on('error', async (err) => {
-    logger.error('mysql error event', err);
+    logger.error({
+      event: 'mysqlConnectionError',
+      err
+    });
     if(err.code === 'PROTOCOL_CONNECTION_LOST' || err.code === 'ER_HOST_IS_BLOCKED') {
       logger.info('mysql reconnecting');
       await connect(app);

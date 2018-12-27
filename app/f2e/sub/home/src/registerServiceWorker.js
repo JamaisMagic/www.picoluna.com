@@ -35,7 +35,7 @@ if (process.env.NODE_ENV === 'production') {
         }
       }
 
-      let subscription = registration.pushManager.getSubscription();
+      let subscription = await registration.pushManager.getSubscription();
 
       if (!subscription || !subscription.endpoint) {
         const response = await fetch('/api/v1/push/vapid/');
