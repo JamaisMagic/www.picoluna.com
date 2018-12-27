@@ -90,6 +90,8 @@ limit 100
 
   const subscription = result[0].subscription;
 
+  console.log(subscription);
+
   try {
     const result = await webPush.sendNotification(subscription, payload, options);
     console.log('Send end', result);
