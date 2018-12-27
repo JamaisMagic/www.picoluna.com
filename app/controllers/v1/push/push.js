@@ -1,5 +1,6 @@
 const webPush = require('web-push');
 const logger = require('../../../logger');
+const childProcess = require('child_process');
 
 
 webPush.setVapidDetails(
@@ -46,6 +47,32 @@ exports.sendNotification = async ctx => {
   const options = {
     TTL: body.ttl || 300,
   };
+
+
+
+
+  const cp = childProcess.spawn('node', [
+    `${process.cwd()}/app/scripts/tasks/webpush/sendNotification.js`,
+    '--payload', payload,
+    '--NODE_ENV', process.env.NODE_ENV,
+    '--endpoint', endpoint,
+  ], {
+    env: process.env
+  });
+  cp.stdout.on('data', data => {
+    logger.info(`Child process stdout:${data}`);
+  });
+  cp.stderr.on('data', data => {
+    logger.info(`Child process stderr:${data}`);
+  });
+  cp.on('close', code => {
+    logger.info(`Child process closed: ${code}`);
+  });
+
+  return ctx.res.success({});
+
+
+
 
   const rows = await ctx.app.dalMysql.webPUsh.querySubscriptionByEndpoint(endpoint);
 
