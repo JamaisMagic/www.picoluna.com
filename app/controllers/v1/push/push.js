@@ -40,7 +40,7 @@ exports.storeSubscription = async ctx => {
 
 exports.sendNotification = async ctx => {
   let body = ctx.request.body || {};
-  const payload = body.payload;
+  const payload = JSON.stringify(body.payload);
   const endpoint = body.endpoint || '';
 
   const options = {
