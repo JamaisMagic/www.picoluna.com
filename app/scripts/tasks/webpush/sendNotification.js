@@ -87,6 +87,7 @@ limit 5000;`;
     connection.end();
   } catch (err) {
     console.error(err);
+    console.log(err.sql);
     connection.end();
   }
 
