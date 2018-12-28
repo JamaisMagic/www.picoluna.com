@@ -28,6 +28,28 @@ const settings = {
   }
 };
 
+function createSql(length) {
+  return `select * from ( select * from web_push_0 
+union select * from web_push_1
+union select * from web_push_2
+union select * from web_push_3
+union select * from web_push_4
+union select * from web_push_5
+union select * from web_push_6
+union select * from web_push_7
+union select * from web_push_8
+union select * from web_push_9
+union select * from web_push_a
+union select * from web_push_b
+union select * from web_push_c
+union select * from web_push_d
+union select * from web_push_e
+union select * from web_push_f ) as U
+where
+U.endpoint in (${new Array(length).fill('?').join(',')})
+limit 5000;`;
+}
+
 
 async function main() {
   console.log(argv);
@@ -68,25 +90,7 @@ async function main() {
   const setting = {...settings.base, ...settings[NODE_ENV]};
   const connection = await mysql.createConnection(setting);
 
-  let sql = `select * from ( select * from web_push_0 
-union select * from web_push_1
-union select * from web_push_2
-union select * from web_push_3
-union select * from web_push_4
-union select * from web_push_5
-union select * from web_push_6
-union select * from web_push_7
-union select * from web_push_8
-union select * from web_push_9
-union select * from web_push_a
-union select * from web_push_b
-union select * from web_push_c
-union select * from web_push_d
-union select * from web_push_e
-union select * from web_push_f ) as U
-where
-U.endpoint in (?)
-limit 5000;`;
+  let sql = createSql(endpoint.length);
 
   let [result, fields] = [null, null];
 
