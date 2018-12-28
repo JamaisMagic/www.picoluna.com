@@ -42,20 +42,28 @@ exports.storeSubscription = async ctx => {
 exports.sendNotification = async ctx => {
   let body = ctx.request.body || {};
   const payload = JSON.stringify(body.payload);
-  const endpoint = body.endpoint || '';
+  let endpoint = body.endpoint || '';
 
   const options = {
     TTL: body.ttl || 300,
   };
 
+  if (!endpoint || endpoint.length <= 0) {
+    return ctx.res.fail({
+      message: 'endpoint is required'
+    });
+  }
 
+  if (!Array.isArray(endpoint)) {
+    endpoint = [endpoint];
+  }
 
-
+  const endpointArgvs = endpoint.reduce((a, c) => [...a, '--endpoint', c], []);
   const cp = childProcess.spawn('node', [
     `${process.cwd()}/app/scripts/tasks/webpush/sendNotification.js`,
     '--payload', payload,
     '--NODE_ENV', process.env.NODE_ENV,
-    '--endpoint', endpoint,
+    ...endpointArgvs,
   ], {
     env: process.env
   });
