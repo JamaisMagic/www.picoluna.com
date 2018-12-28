@@ -53,6 +53,8 @@ limit 5000;`;
 class Queue {
   constructor(options={}) {
     this.tasks = options.tasks || [];
+    this.cucurrency = options.cucurrency || 1;
+    this.gap = options.gap || 0;
   }
 
   add(fn) {
@@ -64,10 +66,18 @@ class Queue {
       return;
     }
 
-    let fn = this.tasks.shift();
-    await fn();
+    let fnArr = this.tasks.splice(0, this.cucurrency);
+    await Promise.all(fnArr.map(fnItem => {
+      return new Promise(async (resolve) => {
+        await fnItem();
+        resolve();
+      });
+    }));
 
     if (this.tasks.length > 0) {
+      if (this.gap > 0) {
+        await new Promise(resolve => setTimeout(resolve, this.gap));
+      }
       await this.run();
     }
   }
@@ -132,6 +142,7 @@ async function main() {
   }
 
   let queue = new Queue({
+    gap: 5,
     tasks: result.map(item => {
       return async () => {
         const subscription = item.subscription;
