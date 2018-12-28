@@ -142,7 +142,7 @@ async function main() {
   }
 
   let queue = new Queue({
-    gap: 5,
+    gap: 5000,
     tasks: result.map(item => {
       return async () => {
         const subscription = item.subscription;
