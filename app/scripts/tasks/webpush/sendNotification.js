@@ -132,7 +132,7 @@ async function main() {
   }
 
   let queue = new Queue({
-    task: result.map(item => {
+    tasks: result.map(item => {
       return async () => {
         const subscription = item.subscription;
         console.log(subscription);
