@@ -50,6 +50,29 @@ U.endpoint in (${new Array(length).fill('?').join(',')})
 limit 5000;`;
 }
 
+class Queue {
+  constructor(options={}) {
+    this.tasks = options.tasks || [];
+  }
+
+  add(fn) {
+    this.tasks.push(fn);
+  }
+
+  async run() {
+    if (this.tasks.length <= 0) {
+      return;
+    }
+
+    let fn = this.tasks.shift();
+    await fn();
+
+    if (this.tasks.length > 0) {
+      await this.run();
+    }
+  }
+}
+
 
 async function main() {
   console.log(argv);
@@ -90,12 +113,12 @@ async function main() {
   const setting = {...settings.base, ...settings[NODE_ENV]};
   const connection = await mysql.createConnection(setting);
 
-  let sql = createSql(1);
+  let sql = createSql(endpoint.length);
 
   let [result, fields] = [null, null];
 
   try {
-    [result, fields] = await connection.execute(sql, [[endpoint]]);
+    [result, fields] = await connection.execute(sql, endpoint);
     connection.end();
   } catch (err) {
     console.log(err);
@@ -108,16 +131,23 @@ async function main() {
     return console.log('No result');
   }
 
-  const subscription = result[0].subscription;
+  let queue = new Queue({
+    task: result.map(item => {
+      return async () => {
+        const subscription = item.subscription;
+        console.log(subscription);
 
-  console.log(subscription);
+        try {
+          const result = await webPush.sendNotification(JSON.parse(subscription), payload, options);
+          console.log('Send end', result);
+        } catch (err) {
+          console.error(err);
+        }
+      }
+    })
+  });
 
-  try {
-    const result = await webPush.sendNotification(JSON.parse(subscription), payload, options);
-    console.log('Send end', result);
-  } catch (err) {
-    console.error(err);
-  }
+  await queue.run();
 }
 
 if (require.main === module) {
