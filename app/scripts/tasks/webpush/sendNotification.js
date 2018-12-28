@@ -54,6 +54,8 @@ async function main() {
     NODE_ENV = NODE_ENV[0];
   }
 
+  console.log(endpoint);
+
   const options = {
     TTL: ttl || ttl,
   };
@@ -77,7 +79,7 @@ union select * from web_push_d
 union select * from web_push_e
 union select * from web_push_f ) as U
 where
-U.endpoint in ?
+U.endpoint in (?)
 limit 5000;`;
 
   let [result, fields] = [null, null];
@@ -86,7 +88,7 @@ limit 5000;`;
     [result, fields] = await connection.execute(sql, [endpoint]);
     connection.end();
   } catch (err) {
-    console.log(err.sql);
+    console.log(err);
     connection.end();
   }
 
