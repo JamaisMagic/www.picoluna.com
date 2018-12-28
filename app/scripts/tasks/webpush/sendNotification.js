@@ -25,7 +25,6 @@ const settings = {
 
 async function main() {
   console.log(argv);
-  console.log(process.cwd());
   let endpoint = argv.endpoint;
   let payload = argv.payload;
   let ttl = argv.ttl;
