@@ -61,7 +61,8 @@ async function main() {
   const setting = {...settings.base, ...settings[NODE_ENV]};
   const connection = await mysql.createConnection(setting);
 
-  let sql = `select * from web_push_0
+  let sql = `select * from (
+      select * from web_push_0
 union select * from web_push_1
 union select * from web_push_2
 union select * from web_push_3
@@ -77,9 +78,10 @@ union select * from web_push_c
 union select * from web_push_d
 union select * from web_push_e
 union select * from web_push_f
+) as U
 where
-endpoint in(?)
-limit 100
+U.endpoint in(?)
+limit 5000
 ;`;
 
   const [result, fields] = await connection.execute(sql, [endpoint]);
