@@ -84,12 +84,15 @@ limit 100
 
   const [result, fields] = await connection.execute(sql, [endpoint]);
 
+  connection.end();
+
   if (!result || result.length <= 0) {
     return console.log('No result');
   }
 
   const subscription = result[0].subscription;
 
+  console.log(result);
   console.log(subscription);
 
   try {
