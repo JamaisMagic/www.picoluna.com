@@ -90,12 +90,12 @@ async function main() {
   const setting = {...settings.base, ...settings[NODE_ENV]};
   const connection = await mysql.createConnection(setting);
 
-  let sql = createSql(endpoint.length);
+  let sql = createSql(1);
 
   let [result, fields] = [null, null];
 
   try {
-    [result, fields] = await connection.execute(sql, endpoint);
+    [result, fields] = await connection.execute(sql, [[endpoint]]);
     connection.end();
   } catch (err) {
     console.log(err);
