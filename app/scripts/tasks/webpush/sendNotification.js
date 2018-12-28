@@ -79,7 +79,7 @@ union select * from web_push_e
 union select * from web_push_f
 ) as U
 where
-U.endpoint in ?
+U.endpoint in (?)
 limit 5000
 ;`;
 
