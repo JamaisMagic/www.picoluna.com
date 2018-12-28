@@ -83,9 +83,15 @@ U.endpoint in ?
 limit 5000
 ;`;
 
-  const [result, fields] = await connection.execute(sql, [endpoint]);
+  let [result, fields] = [null, null];
 
-  connection.end();
+  try {
+    [result, fields] = await connection.execute(sql, [endpoint]);
+    connection.end();
+  } catch (err) {
+    console.error(err);
+    connection.end();
+  }
 
   if (!result || result.length <= 0) {
     return console.log('No result');
