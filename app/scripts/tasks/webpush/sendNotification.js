@@ -85,7 +85,7 @@ limit 5000;`;
   let [result, fields] = [null, null];
 
   try {
-    [result, fields] = await connection.execute(sql, [endpoint]);
+    [result, fields] = await connection.execute(sql, [[endpoint]]);
     connection.end();
   } catch (err) {
     console.log(err);
