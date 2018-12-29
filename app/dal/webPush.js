@@ -54,6 +54,12 @@ class WebPush {
 
     return this.doExecute(`select * from ${tableName} where \`endpoint\` = ?`, [endpoint]);
   }
+
+  async removeSubscriptionByEndpoint(endpoint) {
+    const tableName = WebPush.getTableIndex(endpoint, TABLE_NAME_PREFIX_WEB_PUSH);
+
+    return this.doExecute(`delete from ${tableName} where \`endpoint\` = ?`, [endpoint]);
+  }
 }
 
 module.exports = WebPush;

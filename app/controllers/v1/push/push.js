@@ -20,7 +20,7 @@ exports.getVapid = async ctx => {
   });
 };
 
-exports.storeSubscription = async ctx => {
+exports.subscribe = async ctx => {
   const body = ctx.request.body || {};
   const subscription = body.subscription;
   const ua = ctx.request.get('User-Agent') || '';
@@ -39,14 +39,27 @@ exports.storeSubscription = async ctx => {
   return ctx.res.fail({});
 };
 
+exports.unsubscribe = async ctx => {
+  const body = ctx.request.body || {};
+  const subscription = body.subscription;
+
+  if (!subscription || !subscription.endpoint) {
+    return ctx.res.fail({});
+  }
+
+  const result = await ctx.app.dalMysql.webPUsh.removeSubscriptionByEndpoint(subscription.endpoint);
+
+  if (result) {
+    return ctx.res.success({});
+  }
+
+  ctx.res.fail({});
+};
+
 exports.sendNotification = async ctx => {
-  let body = ctx.request.body || {};
+  const body = ctx.request.body || {};
   const payload = JSON.stringify(body.payload);
   let endpoint = body.endpoint || '';
-
-  const options = {
-    TTL: body.ttl || 300,
-  };
 
   if (!endpoint || endpoint.length <= 0) {
     return ctx.res.fail({
@@ -67,6 +80,7 @@ exports.sendNotification = async ctx => {
   ], {
     env: process.env
   });
+
   cp.stdout.on('data', data => {
     logger.info(`Child process stdout:${data}`);
   });
@@ -78,34 +92,4 @@ exports.sendNotification = async ctx => {
   });
 
   return ctx.res.success({});
-
-
-
-
-  const rows = await ctx.app.dalMysql.webPUsh.querySubscriptionByEndpoint(endpoint);
-
-  if (!rows || rows.length <= 0) {
-    return ctx.res.fail({
-      message: 'No such endpoint'
-    });
-  }
-
-  const subscription = rows[0].subscription;
-
-  try {
-    const result = await webPush.sendNotification(subscription, payload, options);
-    logger.info({event: 'sendNotificationInfo'}, JSON.stringify(result))
-  } catch (err) {
-    logger.error({
-      event: 'sendNotificationError',
-      err,
-      payload,
-      subscription: JSON.stringify(subscription)
-    });
-    return ctx.res.fail({
-      message: 'Send notification failed'
-    });
-  }
-
-  ctx.res.success({});
 };

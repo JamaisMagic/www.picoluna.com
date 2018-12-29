@@ -7,7 +7,7 @@
 
     <v-btn color="info"
            v-if="permission === 'granted'"
-           @click.native="unsubscription">Unsubscript notifications
+           @click.native="unsubscribe">Unsubscribe notifications
     </v-btn>
   </div>
 </template>
@@ -32,7 +32,7 @@
         }
       },
       async requestPermission() {
-        if (!('Notification' in window)) {
+        if (!('Notification' in window && 'serviceWorker' in navigator)) {
           return;
         }
 
@@ -49,7 +49,7 @@
         let subscription = await registration.pushManager.getSubscription();
 
         if (!subscription || !subscription.endpoint) {
-          const response = await fetch('/api/v1/push/vapid/');
+          const response = await fetch('/api/v1/web_push/vapid/');
           const responseJson = await response.json();
           const vapidPublicKey = responseJson.data.publicKey;
           const convertedVapidKey = this.urlBase64ToUint8Array(vapidPublicKey);
@@ -60,7 +60,7 @@
           });
         }
 
-        const response = await fetch('/api/v1/push/subscription/', {
+        const response = await fetch('/api/v1/web_push/subscription/', {
           headers: {'Content-Type': 'application/json'},
           method: 'POST',
           body: JSON.stringify({subscription})
@@ -68,11 +68,36 @@
         const responseJson = await response.json();
 
         if (responseJson.status !== 'success') {
-          console.error('subscript error.');
+          console.error('subscribe error.');
         }
       },
-      async unsubscription() {
+      async unsubscribe() {
+        if (!('serviceWorker' in navigator)) {
+          return;
+        }
+        const registration = await navigator.serviceWorker.ready;
+        const subscription = await registration.pushManager.getSubscription();
+        if (!subscription) {
+          return;
+        }
 
+        const result = await subscription.unsubscribe();
+        if (!result) {
+          console.log('Failed');
+          return;
+        }
+
+        const response = await fetch('/api/v1/web_push/subscription/', {
+          headers: {'Content-Type': 'application/json'},
+          method: 'DELETE',
+          body: JSON.stringify({subscription})
+        });
+
+        const responseJson = await response.json();
+
+        if (responseJson.status !== 'success') {
+          console.error('unsubscribe error.');
+        }
       },
       urlBase64ToUint8Array(base64String) {
         const padding = '='.repeat((4 - base64String.length % 4) % 4);

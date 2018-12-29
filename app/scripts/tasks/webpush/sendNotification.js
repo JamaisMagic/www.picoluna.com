@@ -153,6 +153,7 @@ async function main() {
           console.log('Send end: ', result.statusCode, result.headers.location);
         } catch (err) {
           console.error('Send err: ', err.statusCode, err.message, err.endpoint);
+          // 410
         }
       }
     })
