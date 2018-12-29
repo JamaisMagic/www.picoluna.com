@@ -23,18 +23,6 @@ if (process.env.NODE_ENV === 'production') {
     },
     async registered(registration) {
       console.log('Service-worker registered');
-
-      if (Notification.permission === 'denied') {
-        return;
-      }
-
-      if (Notification.permission !== 'granted') {
-        let permission = await Notification.requestPermission();
-        if (permission !== 'granted') {
-          return;
-        }
-      }
-
       let subscription = await registration.pushManager.getSubscription();
 
       if (!subscription || !subscription.endpoint) {

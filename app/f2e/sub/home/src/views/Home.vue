@@ -1,21 +1,39 @@
 <template>
   <div class="page-home">
-    <div class="welcome-box">
-      Welcome.
-    </div>
+    <a href="javascript://"
+       v-if="permission === 'default'"
+       @click="requestPermission">Allow notification</a>
   </div>
 </template>
 
 <script>
-export default {
-  name: 'home',
-  components: {
-
-  },
-  mounted() {
+  export default {
+    name: 'home',
+    components: {},
+    data() {
+      return {
+        permission: ''
+      }
+    },
+    mounted() {
       // document.dispatchEvent(new Event('prerender-event'));
+      this.checkPermission();
+    },
+    methods: {
+      checkPermission() {
+        if ('Notification' in window) {
+          this.permission = window.Notification.permission;
+        }
+      },
+      async requestPermission() {
+        if ('Notification' in window) {
+          const permission = await window.Notification.requestPermission();
+          this.permission = permission;
+          console.log(`Permission: ${permission}`);
+        }
+      }
+    },
   }
-}
 </script>
 
 <style lang="scss">

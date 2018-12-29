@@ -53,8 +53,8 @@ limit 5000;`;
 class Queue {
   constructor(options={}) {
     this.tasks = options.tasks || [];
-    this.cucurrency = options.cucurrency || 1;
-    this.gap = options.gap || 0;
+    this.cucurrency = parseInt(options.cucurrency) || 1;
+    this.gap = parseInt(options.gap) || 0;
   }
 
   add(fn) {
