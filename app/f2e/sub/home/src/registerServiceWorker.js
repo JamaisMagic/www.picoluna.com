@@ -23,30 +23,6 @@ if (process.env.NODE_ENV === 'production') {
     },
     async registered(registration) {
       console.log('Service-worker registered');
-      let subscription = await registration.pushManager.getSubscription();
-
-      if (!subscription || !subscription.endpoint) {
-        const response = await fetch('/api/v1/push/vapid/');
-        const responseJson = await response.json();
-        const vapidPublicKey = responseJson.data.publicKey;
-        const convertedVapidKey = urlBase64ToUint8Array(vapidPublicKey);
-
-        subscription = await registration.pushManager.subscribe({
-          userVisibleOnly: true,
-          applicationServerKey: convertedVapidKey
-        });
-      }
-
-      const response = await fetch('/api/v1/push/subscription/', {
-        headers: {'Content-Type': 'application/json'},
-        method: 'POST',
-        body: JSON.stringify({ subscription })
-      });
-      const responseJson = await response.json();
-
-      if (responseJson.status !== 'success') {
-        console.error('subscript error.');
-      }
     },
     cached (registration) {
       console.log('Content has been cached for offline use.')
