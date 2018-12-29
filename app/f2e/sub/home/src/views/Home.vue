@@ -1,7 +1,7 @@
 <template>
   <div class="page-home">
     <v-btn color="info"
-           v-if="permission === 'default'"
+           v-if="permission !== 'granted'"
            @click.native="requestPermission">Allow notification</v-btn>
   </div>
 </template>
@@ -29,7 +29,7 @@
         if ('Notification' in window) {
           const permission = await window.Notification.requestPermission();
           this.permission = permission;
-          console.log(`Permission: ${permission}`);
+          console.log(`Permission: ${permission}`); // granted, denied, default
         }
       }
     },
