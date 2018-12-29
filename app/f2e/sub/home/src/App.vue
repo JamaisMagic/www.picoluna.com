@@ -1,7 +1,21 @@
 <template>
-  <div id="app">
-    <router-view/>
-  </div>
+  <v-app>
+    <v-toolbar app class="blue" light v-bind:fixed="true">
+      <v-toolbar-side-icon light></v-toolbar-side-icon>
+      <v-toolbar-title class="white--text">www.picoluna.com</v-toolbar-title>
+      <v-spacer></v-spacer>
+
+      <v-toolbar-items>
+
+      </v-toolbar-items>
+    </v-toolbar>
+
+    <v-content>
+      <v-container fluid>
+        <router-view/>
+      </v-container>
+    </v-content>
+  </v-app>
 </template>
 
 <style lang="scss">

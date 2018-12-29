@@ -1,8 +1,8 @@
 <template>
   <div class="page-home">
-    <a href="javascript://"
-       v-if="permission === 'default'"
-       @click="requestPermission">Allow notification</a>
+    <v-btn color="info"
+           v-if="permission === 'default'"
+           @click.native="requestPermission">Allow notification</v-btn>
   </div>
 </template>
 
