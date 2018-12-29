@@ -1,7 +1,7 @@
 <template>
   <div class="page-home">
     <v-btn color="info"
-           v-if="permission !== 'granted'"
+           v-if="permission && permission !== 'granted'"
            @click.native="requestPermission">Allow notification</v-btn>
   </div>
 </template>
