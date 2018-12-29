@@ -1,12 +1,12 @@
 <template>
   <div class="page-home">
     <v-btn color="info"
-           v-if="permission && permission !== 'granted'"
+           v-if="(permission && permission !== 'granted') || haveSubscription === false"
            @click.native="requestPermission">Subscript notifications
     </v-btn>
 
     <v-btn color="info"
-           v-if="permission === 'granted'"
+           v-if="permission === 'granted' && haveSubscription === true"
            @click.native="unsubscribe">Unsubscribe notifications
     </v-btn>
   </div>
@@ -18,18 +18,28 @@
     components: {},
     data() {
       return {
-        permission: ''
+        permission: '',
+        haveSubscription: null,
       }
     },
     mounted() {
       // document.dispatchEvent(new Event('prerender-event'));
       this.checkPermission();
+      this.checkSubscription();
     },
     methods: {
       checkPermission() {
         if ('Notification' in window) {
           this.permission = window.Notification.permission;
         }
+      },
+      async checkSubscription() {
+        if (!('serviceWorker' in navigator)) {
+          return;
+        }
+        const registration = await navigator.serviceWorker.ready;
+        const subscription = await registration.pushManager.getSubscription();
+        this.haveSubscription = !!subscription;
       },
       async requestPermission() {
         if (!('Notification' in window && 'serviceWorker' in navigator)) {
