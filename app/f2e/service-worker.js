@@ -1,4 +1,4 @@
-importScripts("/sub/home/dist/precache-manifest.a5f097efd5e752e0008b95ca5e23ff5c.js", "https://storage.googleapis.com/workbox-cdn/releases/3.4.1/workbox-sw.js");
+importScripts("/sub/home/dist/precache-manifest.d4f395a3ef25e86a14b25dee753f4415.js", "https://storage.googleapis.com/workbox-cdn/releases/3.4.1/workbox-sw.js");
 
 console.log(self.__precacheManifest);
 
@@ -26,7 +26,7 @@ self.addEventListener('push', event => {
     self.registration.showNotification(messageObj.title || 'www.picoluna.com', {
       body: messageObj.message,
       icon: '/logo-icon-200x200.png',
-      vibrate: [200, 200]
+      vibrate: [200, 200, 200],
     })
   );
 });
