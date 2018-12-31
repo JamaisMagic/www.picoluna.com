@@ -206,6 +206,7 @@ async function sendAll(payload, ttl, NODE_ENV) {
 }
 
 async function main() {
+  console.log(argv);
   let all = argv.all;
   let payload = argv.payload;
   let endpoint = argv.endpoint;
@@ -216,7 +217,7 @@ async function main() {
     throw new Error('payload must be a json string with specify keys');
   }
 
-  if (all === 1) {
+  if (all && all.length >= 0) {
     await sendAll(payload, ttl, NODE_ENV);
     return;
   }
