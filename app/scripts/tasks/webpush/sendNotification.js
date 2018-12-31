@@ -3,7 +3,11 @@ const yargs  = require('yargs');
 const mysql = require('mysql2/promise');
 
 
-const {argv} = yargs.alias('E', 'endpoint').alias('p', 'payload').alias('e', 'NODE_ENV');
+const {argv} = yargs
+  .alias('a', 'all')
+  .alias('E', 'endpoint')
+  .alias('p', 'payload')
+  .alias('e', 'NODE_ENV');
 
 webPush.setVapidDetails(
   'https://www.picoluna.com/',
@@ -28,7 +32,7 @@ const settings = {
   }
 };
 
-function createSql(length) {
+function sqlSelectByEndpoint(length) {
   return `select * from ( select * from web_push_0 
 union select * from web_push_1
 union select * from web_push_2
@@ -47,6 +51,26 @@ union select * from web_push_e
 union select * from web_push_f ) as U
 where
 U.endpoint in (${new Array(length).fill('?').join(',')})
+limit 5000;`;
+}
+
+function sqlSelectAll() {
+  return `select * from ( select * from web_push_0 
+union select * from web_push_1
+union select * from web_push_2
+union select * from web_push_3
+union select * from web_push_4
+union select * from web_push_5
+union select * from web_push_6
+union select * from web_push_7
+union select * from web_push_8
+union select * from web_push_9
+union select * from web_push_a
+union select * from web_push_b
+union select * from web_push_c
+union select * from web_push_d
+union select * from web_push_e
+union select * from web_push_f ) as U
 limit 5000;`;
 }
 
@@ -83,48 +107,10 @@ class Queue {
   }
 }
 
-
-async function main() {
-  console.log(argv);
-  let endpoint = argv.endpoint;
-  let payload = argv.payload;
-  let ttl = argv.ttl;
-  let NODE_ENV = argv.NODE_ENV;
-
-  if (!endpoint) {
-    throw new Error('endpoint is required');
-  }
-
-  if (!payload) {
-    throw new Error('payload is required');
-  }
-
-  if (!Array.isArray(endpoint)) {
-    endpoint = [endpoint];
-  }
-
-  if (Array.isArray(payload)) {
-    payload = payload[0];
-  }
-
-  if (Array.isArray(ttl)) {
-    ttl = ttl[0];
-  }
-
-  if (Array.isArray(NODE_ENV)) {
-    NODE_ENV = NODE_ENV[0];
-  }
-
-  console.log(endpoint);
-
-  const options = {
-    TTL: ttl || ttl,
-  };
+async function sendSpecification(payload, endpoint, ttl, NODE_ENV) {
   const setting = {...settings.base, ...settings[NODE_ENV]};
   const connection = await mysql.createConnection(setting);
-
-  let sql = createSql(endpoint.length);
-
+  const sql = sqlSelectByEndpoint(endpoint.length);
   let [result, fields] = [null, null];
 
   try {
@@ -142,14 +128,16 @@ async function main() {
   }
 
   let queue = new Queue({
-    gap: 5000,
+    gap: 1000,
     tasks: result.map(item => {
       return async () => {
         const subscription = item.subscription;
         console.log(subscription);
 
         try {
-          const result = await webPush.sendNotification(JSON.parse(subscription), payload, options);
+          const result = await webPush.sendNotification(JSON.parse(subscription), payload, {
+            TTL: ttl,
+          });
           console.log('Send end: ', result.statusCode, result.headers.location);
         } catch (err) {
           console.error('Send err: ', err.statusCode, err.message, err.endpoint);
@@ -160,6 +148,88 @@ async function main() {
   });
 
   await queue.run();
+}
+
+function checkJson(val) {
+  try {
+    let o = JSON.parse(val);
+    if (o && typeof o === 'object') {
+      return o;
+    }
+  } catch (err) {
+    return '';
+  }
+}
+
+async function sendAll(payload, ttl, NODE_ENV) {
+  const setting = {...settings.base, ...settings[NODE_ENV]};
+  const connection = await mysql.createConnection(setting);
+  const sql = sqlSelectAll();
+  let [result, fields] = [null, null];
+
+  try {
+    [result, fields] = await connection.execute(sql, []);
+    connection.end();
+  } catch (err) {
+    console.log(err);
+    connection.end();
+  }
+
+  console.log(result);
+
+  if (!result || result.length <= 0) {
+    return console.log('No result');
+  }
+
+  let queue = new Queue({
+    gap: 1000,
+    tasks: result.map(item => {
+      return async () => {
+        const subscription = item.subscription;
+        console.log(subscription);
+
+        try {
+          const result = await webPush.sendNotification(JSON.parse(subscription), payload, {
+            TTL: ttl,
+          });
+          console.log('Send end: ', result.statusCode, result.headers.location);
+        } catch (err) {
+          console.error('Send err: ', err.statusCode, err.message, err.endpoint);
+          // 410
+        }
+      }
+    })
+  });
+
+  await queue.run();
+
+}
+
+async function main() {
+  let all = argv.all;
+  let payload = argv.payload;
+  let endpoint = argv.endpoint;
+  let ttl = Number.parseInt(argv.ttl) || 3600 * 2;
+  let NODE_ENV = argv.NODE_ENV || 'development';
+
+  if (!payload || !checkJson(payload)) {
+    throw new Error('payload must be a json string with specify keys');
+  }
+
+  if (all === 1) {
+    await sendAll(payload, ttl, NODE_ENV);
+    return;
+  }
+
+  if (!Array.isArray(endpoint)) {
+    endpoint = [endpoint];
+  }
+
+  if (endpoint.every(item => !item)) {
+    throw new Error('endpoint is required');
+  }
+
+  await sendSpecification(payload, endpoint, ttl, NODE_ENV);
 }
 
 if (require.main === module) {
