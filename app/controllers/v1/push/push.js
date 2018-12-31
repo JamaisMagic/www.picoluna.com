@@ -58,6 +58,7 @@ exports.unsubscribe = async ctx => {
 
 exports.sendNotification = async ctx => {
   const body = ctx.request.body || {};
+  const all = body.all;
   const payload = JSON.stringify(body.payload);
   let endpoint = body.endpoint || '';
 
@@ -77,6 +78,7 @@ exports.sendNotification = async ctx => {
     '--payload', payload,
     '--NODE_ENV', process.env.NODE_ENV,
     ...endpointArgvs,
+    all === 1 ? '--all' : '',
   ], {
     env: process.env
   });
