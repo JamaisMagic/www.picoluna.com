@@ -217,7 +217,7 @@ async function main() {
     throw new Error('payload must be a json string with specify keys');
   }
 
-  if (all && all.length >= 0) {
+  if (all) {
     await sendAll(payload, ttl, NODE_ENV);
     return;
   }
