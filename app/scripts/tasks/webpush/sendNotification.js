@@ -1,6 +1,12 @@
 const webPush = require('web-push');
 const yargs  = require('yargs');
 const mysql = require('mysql2/promise');
+const Util = require('../../../utils/utils');
+
+const nowDate = new Date();
+const month = `${nowDate.getMonth() + 1 <= 9 ? '0' : ''}${nowDate.getMonth() + 1}`;
+const date = `${nowDate.getDate() <= 9 ? '0' : ''}${nowDate.getDate()}`;
+const nowDateStr = `${nowDate.getFullYear()}-${month}-${date}`;
 
 
 const {argv} = yargs
@@ -50,8 +56,10 @@ union select * from web_push_d
 union select * from web_push_e
 union select * from web_push_f ) as U
 where
-U.endpoint in (${new Array(length).fill('?').join(',')})
-limit 5000;`;
+U.endpoint in (${new Array(length).fill('?').join(',')}) and
+U.ct < ?
+order by U.id asc
+limit 2000;`;
 }
 
 function sqlSelectAll() {
@@ -71,7 +79,10 @@ union select * from web_push_c
 union select * from web_push_d
 union select * from web_push_e
 union select * from web_push_f ) as U
-limit 5000;`;
+where 
+U.ct < ?
+order by U.id asc
+limit 2000;`;
 }
 
 class Queue {
@@ -114,16 +125,15 @@ async function sendSpecification(payload, endpoint, ttl, NODE_ENV) {
   let [result, fields] = [null, null];
 
   try {
-    [result, fields] = await connection.execute(sql, endpoint);
-    connection.end();
+    [result, fields] = await connection.execute(sql, [...endpoint, nowDateStr]);
   } catch (err) {
     console.log(err);
-    connection.end();
   }
 
   console.log(result);
 
   if (!result || result.length <= 0) {
+    connection.end();
     return console.log('No result');
   }
 
@@ -148,6 +158,7 @@ async function sendSpecification(payload, endpoint, ttl, NODE_ENV) {
   });
 
   await queue.run();
+  connection.end();
 }
 
 function checkJson(val) {
@@ -168,16 +179,15 @@ async function sendAll(payload, ttl, NODE_ENV) {
   let [result, fields] = [null, null];
 
   try {
-    [result, fields] = await connection.execute(sql, []);
-    connection.end();
+    [result, fields] = await connection.execute(sql, [nowDateStr]);
   } catch (err) {
     console.log(err);
-    connection.end();
   }
 
   console.log(result);
 
   if (!result || result.length <= 0) {
+    connection.end();
     return console.log('No result');
   }
 
@@ -202,7 +212,7 @@ async function sendAll(payload, ttl, NODE_ENV) {
   });
 
   await queue.run();
-
+  connection.end();
 }
 
 async function main() {
