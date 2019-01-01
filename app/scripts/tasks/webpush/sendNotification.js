@@ -209,7 +209,6 @@ async function sendAll(payload, ttl, NODE_ENV) {
         })
         .catch(error => {
           console.error(error);
-          break;
         });
       yield consumer;
     }
@@ -254,6 +253,8 @@ async function sendAll(payload, ttl, NODE_ENV) {
   let currentRun = producer;
 
   do {
+    console.log('produceFinished', produceFinished);
+    console.log('consumeFinished', consumeFinished);
     currentRun = proSumMap.get(currentRun).next().value;
   } while(produceFinished === false || consumeFinished === false);
 
