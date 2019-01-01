@@ -223,7 +223,7 @@ async function sendAll(payload, ttl, NODE_ENV) {
             console.log(subscription);
 
             try {
-              const result = await webPush.sendNotification(JSON.parse(subscription), payload, {
+              const result = await webPush.sendNotification(subscription, payload, {
                 TTL: ttl,
               });
               console.log('Send end: ', result.statusCode, result.headers.location);
