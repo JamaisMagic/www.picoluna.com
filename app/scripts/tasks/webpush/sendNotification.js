@@ -1,7 +1,7 @@
 const webPush = require('web-push');
 const yargs  = require('yargs');
 const mysql = require('mysql2/promise');
-const {config} = require('../../../config/index');
+const config = require('../../../config/index');
 const Util = require('../../../utils/utils');
 
 const nowDate = new Date();
@@ -19,8 +19,7 @@ let consumeFinished = false;
 const {argv} = yargs
   .alias('a', 'all')
   .alias('E', 'endpoint')
-  .alias('p', 'payload')
-  .alias('e', 'NODE_ENV');
+  .alias('p', 'payload');
 
 webPush.setVapidDetails(
   'https://www.picoluna.com/',
@@ -96,8 +95,6 @@ async function sendSpecification(payload, endpoint, ttl) {
     console.log(err);
   }
 
-  console.log(result);
-
   if (!result || result.length <= 0) {
     connection.end();
     return console.log('No result');
@@ -108,7 +105,6 @@ async function sendSpecification(payload, endpoint, ttl) {
     tasks: result.map(item => {
       return async () => {
         const subscription = item.subscription;
-        console.log(subscription);
 
         try {
           const result = await webPush.sendNotification(JSON.parse(subscription), payload, {
@@ -136,20 +132,17 @@ async function sendAll(payload, ttl) {
 
   async function *producer() {
     while (true) {
-      console.log('table: ', sendAllCurrentTableIndex, '\n');
-      console.log('id: ', sendAllLastId, '\n');
-
       const [result, fields] = await connection.execute(`select id, subscription, ct 
       from web_push_${sendAllCurrentTableIndex.toString(16)} 
       where id > ?
       and ct < ?
       order by id asc limit 2000`, [sendAllLastId, nowDateStr]);
 
-      console.log(result);
       sendAllLastId = (result[result.length - 1] || {}).id || 0;
       sendAllDataList = [...sendAllDataList, ...result];
       if (result.length <= 0) {
         sendAllCurrentTableIndex = sendAllCurrentTableIndex + 0x1;
+        console.log('table switch: ', sendAllCurrentTableIndex.toString(16));
       }
       if (sendAllCurrentTableIndex > 0xf) {
         produceFinished = true;
@@ -166,7 +159,6 @@ async function sendAll(payload, ttl) {
         items.forEach(item => {
           sendAllTaskQueue.add(async () => {
             const subscription = item.subscription;
-            console.log(subscription);
 
             try {
               const result = await webPush.sendNotification(subscription, payload, {

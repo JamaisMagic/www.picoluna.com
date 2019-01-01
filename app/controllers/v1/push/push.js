@@ -76,7 +76,6 @@ exports.sendNotification = async ctx => {
   const cp = childProcess.spawn('node', [
     `${process.cwd()}/app/scripts/tasks/webpush/sendNotification.js`,
     '--payload', payload,
-    '--NODE_ENV', process.env.NODE_ENV,
     ...endpointArgvs,
     all === 1 ? '--all' : '',
   ], {
