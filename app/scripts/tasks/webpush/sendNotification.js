@@ -188,6 +188,9 @@ async function sendAll(payload, ttl, NODE_ENV) {
 
   function *producer() {
     while (true) {
+      console.log('current table', sendAllCurrentTableIndex.toString(16));
+      console.log('last id', sendAllLastId);
+
       connection.execute(`select id, subscription, ct 
       from web_push_${sendAllCurrentTableIndex.toString(16)} 
       where id > ?
@@ -214,6 +217,9 @@ async function sendAll(payload, ttl, NODE_ENV) {
 
   function *consumer() {
     while (true) {
+      console.log('send data list length', sendAllDataList.length);
+      console.log('produceFinished', produceFinished);
+
       if (sendAllDataList.length <= 0 && produceFinished === true) {
         consumeFinished = true;
         break;
