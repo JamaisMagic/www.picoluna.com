@@ -198,6 +198,7 @@ async function sendAll(payload, ttl, NODE_ENV) {
       and ct < ?
       order by id asc limit 2000`, [sendAllLastId, nowDateStr])
         .then((result, fields) => {
+          console.log(result);
           sendAllLastId = (result[result.length] || {}).id || 0;
           sendAllDataList = [...sendAllDataList, ...result];
           if (result.length <= 0) {
