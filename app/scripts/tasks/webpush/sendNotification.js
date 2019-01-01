@@ -186,10 +186,16 @@ async function sendAll(payload, ttl, NODE_ENV) {
     gap: 1000
   });
 
+  let sendAllQueryQueue = new Queue({
+    gap: 100
+  });
+
   function *producer() {
     while (true) {
       console.log('current table', sendAllCurrentTableIndex.toString(16));
       console.log('last id', sendAllLastId);
+
+
 
       connection.execute(`select id, subscription, ct 
       from web_push_${sendAllCurrentTableIndex.toString(16)} 
@@ -241,6 +247,7 @@ async function sendAll(payload, ttl, NODE_ENV) {
             }
           });
         });
+        sendAllTaskQueue.run();
       }
       yield producer;
     }
