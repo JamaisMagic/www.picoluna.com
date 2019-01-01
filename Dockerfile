@@ -1,4 +1,4 @@
-FROM node:alpine as development
+FROM node:10.15.0-alpine as development
 
 WORKDIR /data/app/www.picoluna.com
 COPY ./package.json /data/app/www.picoluna.com/
