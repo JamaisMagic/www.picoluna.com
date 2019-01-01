@@ -68,29 +68,6 @@ order by U.id asc
 limit 2000;`;
 }
 
-function sqlSelectAll() {
-  return `select * from ( select * from web_push_0 
-union select * from web_push_1
-union select * from web_push_2
-union select * from web_push_3
-union select * from web_push_4
-union select * from web_push_5
-union select * from web_push_6
-union select * from web_push_7
-union select * from web_push_8
-union select * from web_push_9
-union select * from web_push_a
-union select * from web_push_b
-union select * from web_push_c
-union select * from web_push_d
-union select * from web_push_e
-union select * from web_push_f ) as U
-where 
-U.ct < ?
-order by U.id asc
-limit 2000;`;
-}
-
 class Queue {
   constructor(options={}) {
     this.tasks = options.tasks || [];
@@ -167,27 +144,12 @@ async function sendSpecification(payload, endpoint, ttl, NODE_ENV) {
   connection.end();
 }
 
-function checkJson(val) {
-  try {
-    let o = JSON.parse(val);
-    if (o && typeof o === 'object') {
-      return o;
-    }
-  } catch (err) {
-    return '';
-  }
-}
-
 async function sendAll(payload, ttl, NODE_ENV) {
   const setting = {...settings.base, ...settings[NODE_ENV]};
   const connection = await mysql.createConnection(setting);
 
   let sendAllTaskQueue = new Queue({
     gap: 1000
-  });
-
-  let sendAllQueryQueue = new Queue({
-    gap: 100
   });
 
   async function *producer() {
@@ -232,6 +194,9 @@ async function sendAll(payload, ttl, NODE_ENV) {
             } catch (err) {
               console.error('Send err: ', err.statusCode, err.message, err.endpoint);
               // 410
+              if (err.statusCode === 410) {
+                await connection.execute(`delete from web_push_${Util.md5(err.endpoint).toLowerCase()[0]} where id = ?`, [item.id]);
+              }
             }
           });
         });
@@ -240,7 +205,6 @@ async function sendAll(payload, ttl, NODE_ENV) {
         consumeFinished = true;
         console.log('consume finish');
       }
-
       yield producer;
     }
   }
@@ -256,51 +220,6 @@ async function sendAll(payload, ttl, NODE_ENV) {
   } while(produceFinished === false || consumeFinished === false);
 
   await connection.end();
-
-  return;
-
-
-
-
-
-  // const sql = sqlSelectAll();
-  // let [result, fields] = [null, null];
-  //
-  // try {
-  //   [result, fields] = await connection.execute(sql, [nowDateStr]);
-  // } catch (err) {
-  //   console.log(err);
-  // }
-  //
-  // console.log(result);
-  //
-  // if (!result || result.length <= 0) {
-  //   connection.end();
-  //   return console.log('No result');
-  // }
-  //
-  // let queue = new Queue({
-  //   gap: 1000,
-  //   tasks: result.map(item => {
-  //     return async () => {
-  //       const subscription = item.subscription;
-  //       console.log(subscription);
-  //
-  //       try {
-  //         const result = await webPush.sendNotification(JSON.parse(subscription), payload, {
-  //           TTL: ttl,
-  //         });
-  //         console.log('Send end: ', result.statusCode, result.headers.location);
-  //       } catch (err) {
-  //         console.error('Send err: ', err.statusCode, err.message, err.endpoint);
-  //         // 410
-  //       }
-  //     }
-  //   })
-  // });
-  //
-  // await queue.run();
-  // connection.end();
 }
 
 async function main() {
@@ -311,7 +230,7 @@ async function main() {
   let ttl = Number.parseInt(argv.ttl) || 3600 * 2;
   let NODE_ENV = argv.NODE_ENV || 'development';
 
-  if (!payload || !checkJson(payload)) {
+  if (!payload || !Util.isJson(payload)) {
     throw new Error('payload must be a json string with specify keys');
   }
 
