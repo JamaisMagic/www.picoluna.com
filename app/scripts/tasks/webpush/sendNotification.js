@@ -246,7 +246,7 @@ async function sendAll(payload, ttl, NODE_ENV) {
   let currentRun = producer;
 
   do {
-    currentRun = proSumMap.get(currentRun).next().value;
+    currentRun = (await proSumMap.get(currentRun).next()).value;
   } while(produceFinished === false || consumeFinished === false);
 
   await connection.end();
