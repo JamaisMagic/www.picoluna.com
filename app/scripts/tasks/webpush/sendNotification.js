@@ -195,8 +195,6 @@ async function sendAll(payload, ttl, NODE_ENV) {
       console.log('current table', sendAllCurrentTableIndex.toString(16));
       console.log('last id', sendAllLastId);
 
-
-
       connection.execute(`select id, subscription, ct 
       from web_push_${sendAllCurrentTableIndex.toString(16)} 
       where id > ?
@@ -210,7 +208,6 @@ async function sendAll(payload, ttl, NODE_ENV) {
           }
           if (sendAllCurrentTableIndex > 0xf) {
             produceFinished = true;
-            break;
           }
         })
         .catch(error => {
@@ -227,9 +224,7 @@ async function sendAll(payload, ttl, NODE_ENV) {
 
       if (sendAllDataList.length <= 0 && produceFinished === true) {
         consumeFinished = true;
-        break;
-      }
-      if (sendAllDataList.length > 0) {
+      } else if (sendAllDataList.length > 0) {
         let items = sendAllDataList.splice(0, 1000);
         items.forEach(item => {
           sendAllTaskQueue.add(async () => {
