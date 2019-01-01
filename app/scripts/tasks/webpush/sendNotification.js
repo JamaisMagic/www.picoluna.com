@@ -190,32 +190,28 @@ async function sendAll(payload, ttl, NODE_ENV) {
     gap: 100
   });
 
-  function *producer() {
+  async function *producer() {
     while (true) {
-      connection.execute(`select id, subscription, ct 
+      const [result, fields] = await connection.execute(`select id, subscription, ct 
       from web_push_${sendAllCurrentTableIndex.toString(16)} 
       where id > ?
       and ct < ?
-      order by id asc limit 2000`, [sendAllLastId, nowDateStr])
-        .then((result, fields) => {
-          console.log(result);
-          sendAllLastId = (result[result.length] || {}).id || 0;
-          sendAllDataList = [...sendAllDataList, ...result];
-          if (result.length <= 0) {
-            sendAllCurrentTableIndex = sendAllCurrentTableIndex + 0x1;
-          }
-          if (sendAllCurrentTableIndex > 0xf) {
-            produceFinished = true;
-          }
-        })
-        .catch(error => {
-          console.error(error);
-        });
+      order by id asc limit 2000`, [sendAllLastId, nowDateStr]);
+
+      console.log(result);
+      sendAllLastId = (result[result.length] || {}).id || 0;
+      sendAllDataList = [...sendAllDataList, ...result];
+      if (result.length <= 0) {
+        sendAllCurrentTableIndex = sendAllCurrentTableIndex + 0x1;
+      }
+      if (sendAllCurrentTableIndex > 0xf) {
+        produceFinished = true;
+      }
       yield consumer;
     }
   }
 
-  function *consumer() {
+  async function *consumer() {
     while (true) {
       if (sendAllDataList.length <= 0 && produceFinished === true) {
         consumeFinished = true;
@@ -237,7 +233,7 @@ async function sendAll(payload, ttl, NODE_ENV) {
             }
           });
         });
-        sendAllTaskQueue.run();
+        await sendAllTaskQueue.run();
       }
       yield producer;
     }
