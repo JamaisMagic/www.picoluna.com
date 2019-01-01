@@ -202,7 +202,7 @@ async function sendAll(payload, ttl, NODE_ENV) {
       order by id asc limit 2000`, [sendAllLastId, nowDateStr]);
 
       console.log(result);
-      sendAllLastId = (result[result.length] || {}).id || 0;
+      sendAllLastId = (result[result.length - 1] || {}).id || 0;
       sendAllDataList = [...sendAllDataList, ...result];
       if (result.length <= 0) {
         sendAllCurrentTableIndex = sendAllCurrentTableIndex + 0x1;
