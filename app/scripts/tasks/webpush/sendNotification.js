@@ -192,6 +192,9 @@ async function sendAll(payload, ttl, NODE_ENV) {
 
   async function *producer() {
     while (true) {
+      console.log('table: ', sendAllCurrentTableIndex, '\n');
+      console.log('id: ', sendAllLastId, '\n');
+
       const [result, fields] = await connection.execute(`select id, subscription, ct 
       from web_push_${sendAllCurrentTableIndex.toString(16)} 
       where id > ?
@@ -206,6 +209,7 @@ async function sendAll(payload, ttl, NODE_ENV) {
       }
       if (sendAllCurrentTableIndex > 0xf) {
         produceFinished = true;
+        console.log('produce finished');
       }
       yield consumer;
     }
@@ -213,9 +217,7 @@ async function sendAll(payload, ttl, NODE_ENV) {
 
   async function *consumer() {
     while (true) {
-      if (sendAllDataList.length <= 0 && produceFinished === true) {
-        consumeFinished = true;
-      } else if (sendAllDataList.length > 0) {
+      if (sendAllDataList.length > 0) {
         let items = sendAllDataList.splice(0, 1000);
         items.forEach(item => {
           sendAllTaskQueue.add(async () => {
@@ -234,7 +236,11 @@ async function sendAll(payload, ttl, NODE_ENV) {
           });
         });
         await sendAllTaskQueue.run();
+      } else if (produceFinished === true) {
+        consumeFinished = true;
+        console.log('consume finish');
       }
+
       yield producer;
     }
   }
