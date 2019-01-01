@@ -8,6 +8,12 @@ const month = `${nowDate.getMonth() + 1 <= 9 ? '0' : ''}${nowDate.getMonth() + 1
 const date = `${nowDate.getDate() <= 9 ? '0' : ''}${nowDate.getDate()}`;
 const nowDateStr = `${nowDate.getFullYear()}-${month}-${date}`;
 
+let sendAllDataList = [];
+let sendAllLastId = 0;
+let sendAllCurrentTableIndex = 0x0;
+let produceFinished = false;
+let consumeFinished = false;
+
 
 const {argv} = yargs
   .alias('a', 'all')
@@ -175,6 +181,84 @@ function checkJson(val) {
 async function sendAll(payload, ttl, NODE_ENV) {
   const setting = {...settings.base, ...settings[NODE_ENV]};
   const connection = await mysql.createConnection(setting);
+
+
+
+  let sendAllTaskQueue = new Queue({
+    gap: 1000
+  });
+
+  function *producer() {
+    while (true) {
+      connection.execute(`select id, subscription 
+      from web_push_${sendAllCurrentTableIndex.toString(16)} 
+      where id > ?
+      order by id asc limit 1`, [sendAllLastId])
+        .then((result, fields) => {
+          sendAllLastId = (result[result.length] || {}).id || 0;
+          sendAllDataList = [...sendAllDataList, ...result];
+          if (result.length <= 0) {
+            sendAllCurrentTableIndex = sendAllCurrentTableIndex + 0x1;
+          }
+          if (sendAllCurrentTableIndex > 0xf) {
+            produceFinished = true;
+            break;
+          }
+        })
+        .catch(error => {
+          console.error(error);
+          break;
+        });
+      yield consumer;
+    }
+  }
+
+  function *consumer() {
+    while (true) {
+      if (sendAllDataList.length > 0) {
+        let item = sendAllDataList.splice(0, 1);
+        sendAllTaskQueue.add(async () => {
+          const subscription = item.subscription;
+          console.log(subscription);
+
+          try {
+            const result = await webPush.sendNotification(JSON.parse(subscription), payload, {
+              TTL: ttl,
+            });
+            console.log('Send end: ', result.statusCode, result.headers.location);
+          } catch (err) {
+            console.error('Send err: ', err.statusCode, err.message, err.endpoint);
+            // 410
+          }
+        });
+      } else {
+        if (produceFinished === true) {
+          consumeFinished = true;
+          break;
+        }
+      }
+      yield producer;
+    }
+  }
+
+  let proSumMap = new WeakMap();
+  proSumMap.set(consumer, consumer());
+  proSumMap.set(producer, producer());
+
+  let currentRun = producer;
+
+  do {
+    currentRun = proSumMap.get(currentRun).next().value;
+  } while(produceFinished === false || consumeFinished === false);
+
+  await connection.end();
+
+  return;
+
+
+
+
+
   const sql = sqlSelectAll();
   let [result, fields] = [null, null];
 
