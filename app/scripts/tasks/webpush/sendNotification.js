@@ -259,44 +259,44 @@ async function sendAll(payload, ttl, NODE_ENV) {
 
 
 
-  const sql = sqlSelectAll();
-  let [result, fields] = [null, null];
-
-  try {
-    [result, fields] = await connection.execute(sql, [nowDateStr]);
-  } catch (err) {
-    console.log(err);
-  }
-
-  console.log(result);
-
-  if (!result || result.length <= 0) {
-    connection.end();
-    return console.log('No result');
-  }
-
-  let queue = new Queue({
-    gap: 1000,
-    tasks: result.map(item => {
-      return async () => {
-        const subscription = item.subscription;
-        console.log(subscription);
-
-        try {
-          const result = await webPush.sendNotification(JSON.parse(subscription), payload, {
-            TTL: ttl,
-          });
-          console.log('Send end: ', result.statusCode, result.headers.location);
-        } catch (err) {
-          console.error('Send err: ', err.statusCode, err.message, err.endpoint);
-          // 410
-        }
-      }
-    })
-  });
-
-  await queue.run();
-  connection.end();
+  // const sql = sqlSelectAll();
+  // let [result, fields] = [null, null];
+  //
+  // try {
+  //   [result, fields] = await connection.execute(sql, [nowDateStr]);
+  // } catch (err) {
+  //   console.log(err);
+  // }
+  //
+  // console.log(result);
+  //
+  // if (!result || result.length <= 0) {
+  //   connection.end();
+  //   return console.log('No result');
+  // }
+  //
+  // let queue = new Queue({
+  //   gap: 1000,
+  //   tasks: result.map(item => {
+  //     return async () => {
+  //       const subscription = item.subscription;
+  //       console.log(subscription);
+  //
+  //       try {
+  //         const result = await webPush.sendNotification(JSON.parse(subscription), payload, {
+  //           TTL: ttl,
+  //         });
+  //         console.log('Send end: ', result.statusCode, result.headers.location);
+  //       } catch (err) {
+  //         console.error('Send err: ', err.statusCode, err.message, err.endpoint);
+  //         // 410
+  //       }
+  //     }
+  //   })
+  // });
+  //
+  // await queue.run();
+  // connection.end();
 }
 
 async function main() {
