@@ -182,18 +182,17 @@ async function sendAll(payload, ttl, NODE_ENV) {
   const setting = {...settings.base, ...settings[NODE_ENV]};
   const connection = await mysql.createConnection(setting);
 
-
-
   let sendAllTaskQueue = new Queue({
     gap: 1000
   });
 
   function *producer() {
     while (true) {
-      connection.execute(`select id, subscription 
+      connection.execute(`select id, subscription, ct 
       from web_push_${sendAllCurrentTableIndex.toString(16)} 
       where id > ?
-      order by id asc limit 1`, [sendAllLastId])
+      and ct < ?
+      order by id asc limit 2000`, [sendAllLastId, nowDateStr])
         .then((result, fields) => {
           sendAllLastId = (result[result.length] || {}).id || 0;
           sendAllDataList = [...sendAllDataList, ...result];
@@ -215,27 +214,28 @@ async function sendAll(payload, ttl, NODE_ENV) {
 
   function *consumer() {
     while (true) {
+      if (sendAllDataList.length <= 0 && produceFinished === true) {
+        consumeFinished = true;
+        break;
+      }
       if (sendAllDataList.length > 0) {
-        let item = sendAllDataList.splice(0, 1);
-        sendAllTaskQueue.add(async () => {
-          const subscription = item.subscription;
-          console.log(subscription);
+        let items = sendAllDataList.splice(0, 1000);
+        items.forEach(item => {
+          sendAllTaskQueue.add(async () => {
+            const subscription = item.subscription;
+            console.log(subscription);
 
-          try {
-            const result = await webPush.sendNotification(JSON.parse(subscription), payload, {
-              TTL: ttl,
-            });
-            console.log('Send end: ', result.statusCode, result.headers.location);
-          } catch (err) {
-            console.error('Send err: ', err.statusCode, err.message, err.endpoint);
-            // 410
-          }
+            try {
+              const result = await webPush.sendNotification(JSON.parse(subscription), payload, {
+                TTL: ttl,
+              });
+              console.log('Send end: ', result.statusCode, result.headers.location);
+            } catch (err) {
+              console.error('Send err: ', err.statusCode, err.message, err.endpoint);
+              // 410
+            }
+          });
         });
-      } else {
-        if (produceFinished === true) {
-          consumeFinished = true;
-          break;
-        }
       }
       yield producer;
     }
