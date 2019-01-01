@@ -1,6 +1,7 @@
 const webPush = require('web-push');
 const yargs  = require('yargs');
 const mysql = require('mysql2/promise');
+const {config} = require('../../../config/index');
 const Util = require('../../../utils/utils');
 
 const nowDate = new Date();
@@ -26,23 +27,6 @@ webPush.setVapidDetails(
   'BC8OkdboFO_cuonafMmGUDZLwIQaUqG3XJrGoaajniesg_wJTidw0ttPGenM1S-S26IgHvJ5Vpr--AWWsZ_K-6M',
   'VoW_aeb33HLVSUAR6VDqo_U6WxlhT5l8keo6EnsWcl0'
 );
-
-const settings = {
-  base: {
-    host: 'www_mysql_5',
-    port: 3306,
-    database: 'www_picoluna_com',
-    user: 'root',
-    password: '123456',
-    charset: 'UTF8MB4_GENERAL_CI'
-  },
-  development: {
-
-  },
-  production: {
-
-  }
-};
 
 function sqlSelectByEndpoint(length) {
   return `select * from ( select * from web_push_0 
@@ -101,9 +85,8 @@ class Queue {
   }
 }
 
-async function sendSpecification(payload, endpoint, ttl, NODE_ENV) {
-  const setting = {...settings.base, ...settings[NODE_ENV]};
-  const connection = await mysql.createConnection(setting);
+async function sendSpecification(payload, endpoint, ttl) {
+  const connection = await mysql.createConnection(config.mysql);
   const sql = sqlSelectByEndpoint(endpoint.length);
   let [result, fields] = [null, null];
 
@@ -144,9 +127,8 @@ async function sendSpecification(payload, endpoint, ttl, NODE_ENV) {
   connection.end();
 }
 
-async function sendAll(payload, ttl, NODE_ENV) {
-  const setting = {...settings.base, ...settings[NODE_ENV]};
-  const connection = await mysql.createConnection(setting);
+async function sendAll(payload, ttl) {
+  const connection = await mysql.createConnection(config.mysql);
 
   let sendAllTaskQueue = new Queue({
     gap: 1000
@@ -228,14 +210,13 @@ async function main() {
   let payload = argv.payload;
   let endpoint = argv.endpoint;
   let ttl = Number.parseInt(argv.ttl) || 3600 * 2;
-  let NODE_ENV = argv.NODE_ENV || 'development';
 
   if (!payload || !Util.isJson(payload)) {
     throw new Error('payload must be a json string with specify keys');
   }
 
   if (all) {
-    await sendAll(payload, ttl, NODE_ENV);
+    await sendAll(payload, ttl);
     return;
   }
 
@@ -247,7 +228,7 @@ async function main() {
     throw new Error('endpoint is required');
   }
 
-  await sendSpecification(payload, endpoint, ttl, NODE_ENV);
+  await sendSpecification(payload, endpoint, ttl);
 }
 
 if (require.main === module) {

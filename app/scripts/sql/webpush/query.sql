@@ -1,4 +1,4 @@
-select * from web_push_0
+select * from ( select * from web_push_0
 union select * from web_push_1
 union select * from web_push_2
 union select * from web_push_3
@@ -13,6 +13,6 @@ union select * from web_push_b
 union select * from web_push_c
 union select * from web_push_d
 union select * from web_push_e
-union select * from web_push_f
-limit 100
+union select * from web_push_f ) as U
+limit 2000
 ;
