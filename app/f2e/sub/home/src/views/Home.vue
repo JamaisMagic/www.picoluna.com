@@ -26,6 +26,7 @@
       // document.dispatchEvent(new Event('prerender-event'));
       this.checkPermission();
       this.checkSubscription();
+      this.autoSubscribe();
     },
     methods: {
       checkPermission() {
@@ -40,6 +41,48 @@
         const registration = await navigator.serviceWorker.ready;
         const subscription = await registration.pushManager.getSubscription();
         this.haveSubscription = !!subscription;
+      },
+      async autoSubscribe() {
+        if (!('Notification' in window && 'serviceWorker' in navigator)) {
+          return;
+        }
+
+        const permission = window.Notification.permission;
+
+        if (permission !== 'granted') {
+          return;
+        }
+
+        const registration = await navigator.serviceWorker.ready;
+
+        if (!registration) {
+          return;
+        }
+
+        let subscription = await registration.pushManager.getSubscription();
+
+        if (subscription && subscription.endpoint) {
+          return;
+        }
+
+        const vapidResponse = await fetch('/api/v1/web_push/vapid/');
+        const vapidResponseJson = await vapidResponse.json();
+
+        subscription = await registration.pushManager.subscribe({
+          userVisibleOnly: true,
+          applicationServerKey: this.urlBase64ToUint8Array(vapidResponseJson.data.publicKey)
+        });
+
+        const response = await fetch('/api/v1/web_push/subscription/', {
+          headers: {'Content-Type': 'application/json'},
+          method: 'POST',
+          body: JSON.stringify({subscription})
+        });
+        const responseJson = await response.json();
+
+        if (responseJson.status !== 'success') {
+          console.error('subscribe error.');
+        }
       },
       async requestPermission() {
         if (!('Notification' in window && 'serviceWorker' in navigator)) {
@@ -61,12 +104,10 @@
         if (!subscription || !subscription.endpoint) {
           const response = await fetch('/api/v1/web_push/vapid/');
           const responseJson = await response.json();
-          const vapidPublicKey = responseJson.data.publicKey;
-          const convertedVapidKey = this.urlBase64ToUint8Array(vapidPublicKey);
 
           subscription = await registration.pushManager.subscribe({
             userVisibleOnly: true,
-            applicationServerKey: convertedVapidKey
+            applicationServerKey: this.urlBase64ToUint8Array(responseJson.data.publicKey)
           });
         }
 
