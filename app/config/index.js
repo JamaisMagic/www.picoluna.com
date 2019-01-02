@@ -1,4 +1,5 @@
 const dotenv = require('dotenv');
+const sensitive = require('./sensitive');
 
 
 dotenv.config();
@@ -22,7 +23,8 @@ const configs = {
       user: process.env.MYSQL_USER || 'root',
       password: process.env.MYSQL_PWD || '123456',
       charset: 'UTF8MB4_GENERAL_CI'
-    }
+    },
+    sensitive
   },
   production: {
     port: process.env.APP_PORT || 8000

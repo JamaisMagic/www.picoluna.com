@@ -1,17 +1,11 @@
-const webPush = require('web-push');
-const logger = require('../../../logger');
 const childProcess = require('child_process');
+const logger = require('../../../logger');
+const config = require('../../../config/index');
 
-
-webPush.setVapidDetails(
-  'https://www.picoluna.com/',
-  'BC8OkdboFO_cuonafMmGUDZLwIQaUqG3XJrGoaajniesg_wJTidw0ttPGenM1S-S26IgHvJ5Vpr--AWWsZ_K-6M',
-  'VoW_aeb33HLVSUAR6VDqo_U6WxlhT5l8keo6EnsWcl0'
-);
 
 exports.getVapid = async ctx => {
   const data = {
-    publicKey: 'BC8OkdboFO_cuonafMmGUDZLwIQaUqG3XJrGoaajniesg_wJTidw0ttPGenM1S-S26IgHvJ5Vpr--AWWsZ_K-6M',
+    publicKey: config.sensitie.vapid.publicKey,
   };
 
   return ctx.res.ok({
