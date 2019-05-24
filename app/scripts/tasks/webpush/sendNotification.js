@@ -161,6 +161,7 @@ async function sendAll(payload, ttl) {
             const subscription = item.subscription;
 
             try {
+              console.log('send notification: ' + JSON.stringify(subscription) + ' : ' + payload);
               const result = await webPush.sendNotification(subscription, payload, {
                 TTL: ttl,
               });
