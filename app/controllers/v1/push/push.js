@@ -5,7 +5,7 @@ const config = require('../../../config/index');
 
 exports.getVapid = async ctx => {
   const data = {
-    publicKey: config.sensitie.vapid.publicKey,
+    publicKey: config.sensitive.vapid.publicKey,
   };
 
   return ctx.res.ok({

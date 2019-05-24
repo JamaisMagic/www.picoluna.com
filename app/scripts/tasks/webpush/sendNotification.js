@@ -23,8 +23,8 @@ const {argv} = yargs
 
 webPush.setVapidDetails(
   'https://www.picoluna.com/',
-  config.sensitie.vapid.publicKey,
-  config.sensitie.vapid.privateKey
+  config.sensitive.vapid.publicKey,
+  config.sensitive.vapid.privateKey
 );
 
 function sqlSelectByEndpoint(length) {
