@@ -1,6 +1,6 @@
 module.exports = {
   vapid: {
-    "publicKey": "BC8OkdboFO_cuonafMmGUDZLwIQaUqG3XJrGoaajniesg_wJTidw0ttPGenM1S-S26IgHvJ5Vpr--AWWsZ_K-6M",
-    "privateKey": "VoW_aeb33HLVSUAR6VDqo_U6WxlhT5l8keo6EnsWcl0"
+    "publicKey": "BKibcQHuQIRf2gXn9hRu1N4otZPQ36IoOsjd8H825oMkloZ67xWkOga6gIORJ6SFH4r3o5WhEhuiCzwW5i1-9r0",
+    "privateKey": "oTad6dVwGtfr6XFQiS2TbCx9k6oSHeAWdzidBkQXmx8"
   }
 };
